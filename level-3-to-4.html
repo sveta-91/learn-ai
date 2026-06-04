@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 3 → 4 · Autonomous automation with Claude</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Spline+Sans+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --ink:#1a1410;--paper:#f4ede1;--paper-2:#ebe0cf;--rust:#b4421f;--rust-dk:#8a3216;
+            --moss:#4a5d3a;--gold:#c08a2d;--line:#cdbfa6;--shadow:rgba(40,25,10,.18);
+        }
+        *{margin:0;padding:0;box-sizing:border-box}
+        html{scroll-behavior:smooth}
+        body{
+            background:var(--paper);color:var(--ink);font-family:'Newsreader',Georgia,serif;
+            font-size:18px;line-height:1.65;-webkit-font-smoothing:antialiased;
+            background-image:
+                    radial-gradient(circle at 12% 18%, rgba(192,138,45,.07), transparent 40%),
+                    radial-gradient(circle at 88% 78%, rgba(74,93,58,.07), transparent 42%);
+        }
+        .wrap{max-width:880px;margin:0 auto;padding:0 24px}
+        header.top{position:sticky;top:0;z-index:50;background:rgba(244,237,225,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+        .top-inner{max-width:880px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+        .brand{font-family:'Fraunces',serif;font-weight:600;font-size:1.05rem;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+        .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--rust);box-shadow:0 0 0 4px rgba(180,66,31,.18)}
+        .top-right{display:flex;align-items:center;gap:14px}
+        nav.modnav{display:flex;gap:4px;flex-wrap:wrap}
+        nav.modnav button{font-family:'Spline Sans Mono',monospace;font-size:.72rem;background:none;border:1px solid transparent;border-radius:6px;color:var(--ink);opacity:.55;cursor:pointer;padding:5px 9px;transition:all .18s}
+        nav.modnav button:hover{opacity:1;background:var(--paper-2)}
+        nav.modnav button.active{opacity:1;background:var(--rust);color:var(--paper);font-weight:600}
+        .langtog{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;flex-shrink:0}
+        .langtog button{font-family:'Spline Sans Mono',monospace;font-size:.72rem;font-weight:600;background:var(--paper);border:none;color:var(--ink);opacity:.5;cursor:pointer;padding:6px 11px;transition:all .16s}
+        .langtog button.active{background:var(--ink);color:var(--paper);opacity:1}
+        .hero{padding:78px 0 54px;position:relative}
+        .hero .eyebrow{font-family:'Spline Sans Mono',monospace;font-size:.78rem;text-transform:uppercase;letter-spacing:.22em;color:var(--rust);margin-bottom:22px}
+        .hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(2.6rem,7vw,4.4rem);line-height:.98;letter-spacing:-.025em;margin-bottom:24px}
+        .hero h1 em{font-style:italic;color:var(--rust)}
+        .hero .lede{font-size:1.3rem;max-width:42ch;color:#4a3d30}
+        .levels-strip{display:flex;gap:0;margin-top:46px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--paper-2)}
+        .levels-strip .lv{flex:1;padding:18px 14px;text-align:center;border-right:1px solid var(--line);position:relative}
+        .levels-strip .lv:last-child{border-right:none}
+        .levels-strip .lv .n{font-family:'Spline Sans Mono',monospace;font-size:.7rem;opacity:.5}
+        .levels-strip .lv .t{font-family:'Fraunces',serif;font-weight:600;font-size:.95rem;margin-top:4px}
+        .levels-strip .lv.you{background:var(--moss);color:var(--paper)}
+        .levels-strip .lv.you .n{opacity:.8}
+        .levels-strip .lv.goal{background:var(--rust);color:var(--paper)}
+        .levels-strip .lv.goal .n{opacity:.85}
+        .levels-strip .lv .tag{position:absolute;top:-1px;left:50%;transform:translate(-50%,-100%);font-family:'Spline Sans Mono',monospace;font-size:.58rem;background:var(--ink);color:var(--paper);padding:2px 7px;border-radius:4px;white-space:nowrap}
+        .module{display:none;padding:40px 0 80px;animation:fade .4s ease}
+        .module.active{display:block}
+        @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+        .mod-head{margin-bottom:34px;border-bottom:2px solid var(--ink);padding-bottom:22px}
+        .mod-head .num{font-family:'Spline Sans Mono',monospace;font-size:.8rem;color:var(--rust);letter-spacing:.15em;text-transform:uppercase}
+        .mod-head h2{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(1.9rem,4.5vw,2.8rem);line-height:1.05;letter-spacing:-.02em;margin-top:8px}
+        .module p{margin:0 0 18px}
+        .module h3{font-family:'Fraunces',serif;font-weight:600;font-size:1.4rem;margin:38px 0 14px;letter-spacing:-.01em}
+        .module ul,.module ol{margin:0 0 18px;padding-left:1.3em}
+        .module li{margin-bottom:8px}
+        strong{font-weight:600}
+        em.term{font-style:normal;font-family:'Spline Sans Mono',monospace;font-size:.86em;background:var(--paper-2);padding:1px 6px;border-radius:4px;color:var(--rust-dk)}
+        .callout{border-left:3px solid var(--gold);background:var(--paper-2);padding:18px 22px;border-radius:0 10px 10px 0;margin:26px 0}
+        .callout .lbl{font-family:'Spline Sans Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);margin-bottom:6px}
+        .callout.warn{border-color:var(--rust)}
+        .callout.warn .lbl{color:var(--rust)}
+        .loop{display:flex;flex-wrap:wrap;gap:10px;margin:28px 0;justify-content:center}
+        .loop .step{flex:1;min-width:130px;background:var(--paper-2);border:1px solid var(--line);border-radius:10px;padding:16px;text-align:center;position:relative}
+        .loop .step .ico{font-size:1.5rem}
+        .loop .step .nm{font-family:'Fraunces',serif;font-weight:600;font-size:1.05rem;margin-top:6px}
+        .loop .step .ds{font-size:.86rem;opacity:.7;line-height:1.4;margin-top:3px}
+        .loop .arrow{align-self:center;color:var(--rust);font-size:1.3rem;font-weight:700}
+        .cmp{width:100%;border-collapse:collapse;margin:24px 0;font-size:.94rem}
+        .cmp th,.cmp td{padding:13px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+        .cmp thead th{font-family:'Spline Sans Mono',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;background:var(--ink);color:var(--paper)}
+        .cmp thead th:first-child{border-radius:8px 0 0 0}
+        .cmp thead th:last-child{border-radius:0 8px 0 0}
+        .cmp td:first-child{font-weight:600;font-family:'Fraunces',serif}
+        .cmp tbody tr:hover{background:var(--paper-2)}
+        .checklist{margin:26px 0;display:grid;gap:10px}
+        .chk{display:flex;align-items:flex-start;gap:13px;background:var(--paper-2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;cursor:pointer;transition:all .16s}
+        .chk:hover{border-color:var(--moss)}
+        .chk .box{width:24px;height:24px;border:2px solid var(--moss);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--paper);transition:all .16s;margin-top:1px}
+        .chk.on .box{background:var(--moss)}
+        .chk.on .box::after{content:'✓'}
+        .chk .box{font-size:0}
+        .chk.on .box{font-size:14px}
+        .chk .txt{font-size:.96rem;line-height:1.45}
+        .chk .txt b{display:block;font-family:'Fraunces',serif}
+        .chk-score{margin-top:18px;padding:18px 20px;border-radius:10px;text-align:center;font-family:'Fraunces',serif;font-size:1.15rem;background:var(--paper-2);border:1px dashed var(--line);transition:all .3s}
+        .chk-score.good{background:var(--moss);color:var(--paper);border-style:solid;border-color:var(--moss)}
+        .chk-score.mid{background:var(--gold);color:var(--ink);border-style:solid;border-color:var(--gold)}
+        .ba{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:26px 0}
+        .ba .col{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+        .ba .col .h{padding:10px 16px;font-family:'Spline Sans Mono',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--paper)}
+        .ba .col.before .h{background:#6b5d4a}
+        .ba .col.after .h{background:var(--moss)}
+        .ba .col .b{padding:16px;font-size:.92rem;line-height:1.55}
+        code{font-family:'Spline Sans Mono',monospace;font-size:.82em;background:var(--ink);color:#f0d9a8;padding:2px 6px;border-radius:4px}
+        pre{background:var(--ink);color:#e8dcc0;padding:18px 20px;border-radius:10px;overflow-x:auto;margin:22px 0;font-family:'Spline Sans Mono',monospace;font-size:.82rem;line-height:1.6}
+        pre .c{color:#7d8a6a}
+        pre .k{color:#d99a4e}
+        .evalbox{background:var(--paper-2);border:1px solid var(--line);border-radius:14px;padding:26px;margin:26px 0}
+        .evalbox label{font-family:'Spline Sans Mono',monospace;font-size:.74rem;text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:10px;opacity:.7}
+        .evalbox textarea{width:100%;min-height:130px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-family:'Newsreader',serif;font-size:1rem;color:var(--ink);resize:vertical;line-height:1.5}
+        .evalbox textarea:focus{outline:none;border-color:var(--rust)}
+        .evalbtn{margin-top:16px;background:var(--rust);color:var(--paper);border:none;font-family:'Spline Sans Mono',monospace;font-size:.82rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding:13px 26px;border-radius:9px;cursor:pointer;transition:all .18s}
+        .evalbtn:hover{background:var(--rust-dk)}
+        .evalbtn:disabled{opacity:.5;cursor:wait}
+        .eval-out{margin-top:24px;display:none}
+        .eval-out.show{display:block;animation:fade .4s}
+        .verdict{display:inline-block;font-family:'Spline Sans Mono',monospace;font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding:6px 14px;border-radius:6px;margin-bottom:16px}
+        .verdict.ready{background:var(--moss);color:var(--paper)}
+        .verdict.partial{background:var(--gold);color:var(--ink)}
+        .verdict.notyet{background:var(--rust);color:var(--paper)}
+        .eval-card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:22px;margin-bottom:14px}
+        .eval-card h4{font-family:'Fraunces',serif;font-size:1.15rem;margin-bottom:8px}
+        .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(244,237,225,.4);border-top-color:var(--paper);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:8px}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .eval-err{color:var(--rust-dk);font-size:.9rem;background:rgba(180,66,31,.08);padding:14px 16px;border-radius:8px;border:1px solid rgba(180,66,31,.25)}
+        .qgrid{display:grid;gap:12px;margin-bottom:8px}
+        .qrow{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+        .qrow .qt{font-size:.96rem;line-height:1.45;margin-bottom:10px}
+        .qopts{display:flex;gap:8px;flex-wrap:wrap}
+        .qopts button{font-family:'Spline Sans Mono',monospace;font-size:.74rem;background:var(--paper-2);border:1px solid var(--line);border-radius:7px;padding:7px 14px;cursor:pointer;color:var(--ink);transition:all .15s}
+        .qopts button:hover{border-color:var(--moss)}
+        .qopts button.sel-yes{background:var(--moss);color:var(--paper);border-color:var(--moss)}
+        .qopts button.sel-part{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+        .qopts button.sel-no{background:#6b5d4a;color:var(--paper);border-color:#6b5d4a}
+        .eval-meter{height:10px;border-radius:6px;background:var(--paper);border:1px solid var(--line);overflow:hidden;margin:6px 0 18px}
+        .eval-meter i{display:block;height:100%;background:var(--moss);width:0;transition:width .5s ease}
+        .pager{display:flex;justify-content:space-between;gap:16px;margin-top:50px;padding-top:28px;border-top:1px solid var(--line)}
+        .pager button{font-family:'Spline Sans Mono',monospace;font-size:.78rem;background:none;border:1px solid var(--line);border-radius:9px;padding:12px 20px;cursor:pointer;color:var(--ink);transition:all .18s;max-width:48%;text-align:left}
+        .pager button:hover:not(:disabled){background:var(--ink);color:var(--paper);border-color:var(--ink)}
+        .pager button:disabled{opacity:.3;cursor:default}
+        .pager button .dir{display:block;font-size:.64rem;opacity:.6;text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px}
+        .pager button.nxt{text-align:right}
+        footer.site{padding:40px 0;text-align:center;font-family:'Spline Sans Mono',monospace;font-size:.72rem;opacity:.45;border-top:1px solid var(--line)}
+        @media(max-width:680px){
+            body{font-size:17px}
+            .ba{grid-template-columns:1fr}
+            .top-inner{flex-wrap:wrap;justify-content:space-between}
+            .top-right{order:3;width:100%;flex-direction:column-reverse;align-items:stretch;gap:8px}
+            nav.modnav{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;gap:6px;padding-bottom:2px;scrollbar-width:thin}
+            nav.modnav button{flex:0 0 auto;white-space:nowrap}
+            .langtog{align-self:flex-end}
+            .levels-strip{flex-wrap:wrap}
+            .levels-strip .lv{min-width:33%;border-bottom:1px solid var(--line)}
+            .loop .arrow{transform:rotate(90deg)}
+        }
+    </style>
+</head>
+<body>
+
+<header class="top">
+    <div class="top-inner">
+        <div class="brand"><span class="dot"></span><span data-i="brand"></span></div>
+        <div class="top-right">
+            <nav class="modnav" id="modnav"></nav>
+            <div class="langtog">
+                <button id="lang-ru" onclick="setLang('ru')">RU</button>
+                <button id="lang-en" onclick="setLang('en')">EN</button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="wrap">
+
+    <section class="module active" data-mod="0">
+        <div class="hero">
+            <div class="eyebrow" data-i="hero.eyebrow"></div>
+            <h1 data-i="hero.h1"></h1>
+            <p class="lede" data-i="hero.lede"></p>
+            <div class="levels-strip">
+                <div class="lv"><div class="n">01</div><div class="t" data-i="lv1"></div></div>
+                <div class="lv"><div class="n">02</div><div class="t" data-i="lv2"></div></div>
+                <div class="lv you"><div class="tag" data-i="lv.you"></div><div class="n">03</div><div class="t" data-i="lv3"></div></div>
+                <div class="lv goal"><div class="tag" data-i="lv.goal"></div><div class="n">04</div><div class="t" data-i="lv4"></div></div>
+            </div>
+        </div>
+        <p data-i="m0.p1"></p>
+        <p data-i="m0.p2"></p>
+        <div class="callout"><div class="lbl" data-i="m0.idea.l"></div><span data-i="m0.idea.b"></span></div>
+        <h3 data-i="m0.toc.h"></h3>
+        <ol>
+            <li data-i="m0.toc.1"></li><li data-i="m0.toc.2"></li><li data-i="m0.toc.3"></li>
+            <li data-i="m0.toc.4"></li><li data-i="m0.toc.5"></li><li data-i="m0.toc.6"></li>
+        </ol>
+        <div class="pager">
+            <button disabled><span class="dir">←</span>—</button>
+            <button class="nxt" onclick="go(1)"><span class="dir" data-i="nav.next"></span><span data-i="p0.next"></span></button>
+        </div>
+    </section>
+
+    <section class="module" data-mod="1">
+        <div class="mod-head"><div class="num" data-i="m1.num"></div><h2 data-i="m1.h"></h2></div>
+        <p data-i="m1.p1"></p>
+        <table class="cmp">
+            <thead><tr><th></th><th data-i="m1.t.c1"></th><th data-i="m1.t.c2"></th></tr></thead>
+            <tbody>
+            <tr><td data-i="m1.t.r1"></td><td data-i="m1.t.r1a"></td><td data-i="m1.t.r1b"></td></tr>
+            <tr><td data-i="m1.t.r2"></td><td data-i="m1.t.r2a"></td><td data-i="m1.t.r2b"></td></tr>
+            <tr><td data-i="m1.t.r3"></td><td data-i="m1.t.r3a"></td><td data-i="m1.t.r3b"></td></tr>
+            <tr><td data-i="m1.t.r4"></td><td data-i="m1.t.r4a"></td><td data-i="m1.t.r4b"></td></tr>
+            <tr><td data-i="m1.t.r5"></td><td data-i="m1.t.r5a"></td><td data-i="m1.t.r5b"></td></tr>
+            </tbody>
+        </table>
+        <h3 data-i="m1.loop.h"></h3>
+        <p data-i="m1.loop.p"></p>
+        <div class="loop">
+            <div class="step"><div class="ico">👁</div><div class="nm">Observe</div><div class="ds" data-i="m1.loop.1"></div></div>
+            <div class="arrow">→</div>
+            <div class="step"><div class="ico">🧠</div><div class="nm">Reason</div><div class="ds" data-i="m1.loop.2"></div></div>
+            <div class="arrow">→</div>
+            <div class="step"><div class="ico">⚙</div><div class="nm">Act</div><div class="ds" data-i="m1.loop.3"></div></div>
+            <div class="arrow">→</div>
+            <div class="step"><div class="ico">✓</div><div class="nm">Verify</div><div class="ds" data-i="m1.loop.4"></div></div>
+        </div>
+        <p data-i="m1.p2"></p>
+        <div class="callout"><div class="lbl" data-i="m1.shift.l"></div><span data-i="m1.shift.b"></span></div>
+        <div class="pager">
+            <button onclick="go(0)"><span class="dir" data-i="nav.back"></span><span data-i="p1.prev"></span></button>
+            <button class="nxt" onclick="go(2)"><span class="dir" data-i="nav.next"></span><span data-i="p1.next"></span></button>
+        </div>
+    </section>
+
+    <section class="module" data-mod="2">
+        <div class="mod-head"><div class="num" data-i="m2.num"></div><h2 data-i="m2.h"></h2></div>
+        <p data-i="m2.p1"></p>
+        <h3 data-i="m2.check.h"></h3>
+        <p data-i="m2.check.p"></p>
+        <div class="checklist" id="checklist">
+            <div class="chk" onclick="toggleChk(this)"><div class="box"></div><div class="txt"><b data-i="m2.c1t"></b><span data-i="m2.c1d"></span></div></div>
+            <div class="chk" onclick="toggleChk(this)"><div class="box"></div><div class="txt"><b data-i="m2.c2t"></b><span data-i="m2.c2d"></span></div></div>
+            <div class="chk" onclick="toggleChk(this)"><div class="box"></div><div class="txt"><b data-i="m2.c3t"></b><span data-i="m2.c3d"></span></div></div>
+            <div class="chk" onclick="toggleChk(this)"><div class="box"></div><div class="txt"><b data-i="m2.c4t"></b><span data-i="m2.c4d"></span></div></div>
+            <div class="chk" onclick="toggleChk(this)"><div class="box"></div><div class="txt"><b data-i="m2.c5t"></b><span data-i="m2.c5d"></span></div></div>
+            <div class="chk" onclick="toggleChk(this)"><div class="box"></div><div class="txt"><b data-i="m2.c6t"></b><span data-i="m2.c6d"></span></div></div>
+        </div>
+        <div class="chk-score" id="chkScore" data-i="m2.score0"></div>
+        <h3 data-i="m2.bad.h"></h3>
+        <ul>
+            <li><strong data-i="m2.bad.1t"></strong> <span data-i="m2.bad.1d"></span></li>
+            <li><strong data-i="m2.bad.2t"></strong> <span data-i="m2.bad.2d"></span></li>
+            <li><strong data-i="m2.bad.3t"></strong> <span data-i="m2.bad.3d"></span></li>
+            <li><strong data-i="m2.bad.4t"></strong> <span data-i="m2.bad.4d"></span></li>
+        </ul>
+        <div class="callout"><div class="lbl" data-i="m2.rule.l"></div><span data-i="m2.rule.b"></span></div>
+        <div class="pager">
+            <button onclick="go(1)"><span class="dir" data-i="nav.back"></span><span data-i="p2.prev"></span></button>
+            <button class="nxt" onclick="go(3)"><span class="dir" data-i="nav.next"></span><span data-i="p2.next"></span></button>
+        </div>
+    </section>
+
+    <section class="module" data-mod="3">
+        <div class="mod-head"><div class="num" data-i="m3.num"></div><h2 data-i="m3.h"></h2></div>
+        <p data-i="m3.p1"></p>
+        <table class="cmp">
+            <thead><tr><th></th><th>Cowork</th><th>Claude Code</th></tr></thead>
+            <tbody>
+            <tr><td data-i="m3.t.r1"></td><td data-i="m3.t.r1a"></td><td data-i="m3.t.r1b"></td></tr>
+            <tr><td data-i="m3.t.r2"></td><td data-i="m3.t.r2a"></td><td data-i="m3.t.r2b"></td></tr>
+            <tr><td data-i="m3.t.r3"></td><td data-i="m3.t.r3a"></td><td data-i="m3.t.r3b"></td></tr>
+            <tr><td data-i="m3.t.r4"></td><td data-i="m3.t.r4a"></td><td data-i="m3.t.r4b"></td></tr>
+            <tr><td data-i="m3.t.r5"></td><td data-i="m3.t.r5a"></td><td data-i="m3.t.r5b"></td></tr>
+            <tr><td data-i="m3.t.r6"></td><td data-i="m3.t.r6a"></td><td data-i="m3.t.r6b"></td></tr>
+            </tbody>
+        </table>
+        <h3 data-i="m3.cw.h"></h3>
+        <p data-i="m3.cw.p"></p>
+        <ul>
+            <li data-i="m3.cw.1"></li><li data-i="m3.cw.2"></li><li data-i="m3.cw.3"></li><li data-i="m3.cw.4"></li>
+        </ul>
+        <div class="callout warn"><div class="lbl" data-i="m3.warn.l"></div><span data-i="m3.warn.b"></span></div>
+        <h3 data-i="m3.cc.h"></h3>
+        <p data-i="m3.cc.p"></p>
+        <pre><span class="c" data-i="m3.code.c1"></span>
+claude <span class="k">--print</span> <span class="k">--permission-mode</span> auto "<span data-i="m3.code.q1"></span>"
+
+<span class="c" data-i="m3.code.c2"></span>
+<span class="k">/loop</span> 10m <span data-i="m3.code.q2"></span>
+
+<span class="c" data-i="m3.code.c3"></span>
+<span class="k">/schedule</span> 0 9 * * * <span data-i="m3.code.q3"></span></pre>
+        <p data-i="m3.cc.p2"></p>
+        <div class="pager">
+            <button onclick="go(2)"><span class="dir" data-i="nav.back"></span><span data-i="p3.prev"></span></button>
+            <button class="nxt" onclick="go(4)"><span class="dir" data-i="nav.next"></span><span data-i="p3.next"></span></button>
+        </div>
+    </section>
+
+    <section class="module" data-mod="4">
+        <div class="mod-head"><div class="num" data-i="m4.num"></div><h2 data-i="m4.h"></h2></div>
+        <p data-i="m4.p1"></p>
+        <h3 data-i="m4.cls.h"></h3>
+        <p data-i="m4.cls.p"></p>
+        <ul>
+            <li data-i="m4.cls.1"></li><li data-i="m4.cls.2"></li>
+            <li><span data-i="m4.cls.3a"></span> <em class="term">.claudeignore</em> <span data-i="m4.cls.3b"></span></li>
+        </ul>
+        <p data-i="m4.cls.p2"></p>
+        <div class="callout warn"><div class="lbl" data-i="m4.preview.l"></div><span data-i="m4.preview.b"></span></div>
+        <h3 data-i="m4.ladder.h"></h3>
+        <p data-i="m4.ladder.p"></p>
+        <div class="loop">
+            <div class="step"><div class="nm" data-i="m4.l1n"></div><div class="ds" data-i="m4.l1d"></div></div>
+            <div class="arrow">→</div>
+            <div class="step"><div class="nm" data-i="m4.l2n"></div><div class="ds" data-i="m4.l2d"></div></div>
+            <div class="arrow">→</div>
+            <div class="step"><div class="nm" data-i="m4.l3n"></div><div class="ds" data-i="m4.l3d"></div></div>
+            <div class="arrow">→</div>
+            <div class="step"><div class="nm" data-i="m4.l4n"></div><div class="ds" data-i="m4.l4d"></div></div>
+        </div>
+        <h3 data-i="m4.net.h"></h3>
+        <ul>
+            <li><strong data-i="m4.net.1t"></strong> <span data-i="m4.net.1d"></span></li>
+            <li><strong data-i="m4.net.2t"></strong> <span data-i="m4.net.2d"></span></li>
+            <li><strong data-i="m4.net.3t"></strong> <span data-i="m4.net.3d"></span></li>
+            <li><strong data-i="m4.net.4t"></strong> <span data-i="m4.net.4d"></span></li>
+            <li><strong>.claudeignore</strong> <span data-i="m4.net.5d"></span></li>
+        </ul>
+        <div class="pager">
+            <button onclick="go(3)"><span class="dir" data-i="nav.back"></span><span data-i="p4.prev"></span></button>
+            <button class="nxt" onclick="go(5)"><span class="dir" data-i="nav.next"></span><span data-i="p4.next"></span></button>
+        </div>
+    </section>
+
+    <section class="module" data-mod="5">
+        <div class="mod-head"><div class="num" data-i="m5.num"></div><h2 data-i="m5.h"></h2></div>
+        <p data-i="m5.p1"></p>
+        <h3 data-i="m5.s1.h"></h3>
+        <p data-i="m5.s1.p"></p>
+        <div class="ba">
+            <div class="col before"><div class="h" data-i="m5.ba.bl"></div><div class="b" data-i="m5.ba.bb"></div></div>
+            <div class="col after"><div class="h" data-i="m5.ba.al"></div><div class="b" data-i="m5.ba.ab"></div></div>
+        </div>
+        <h3 data-i="m5.s2.h"></h3>
+        <p data-i="m5.s2.p"></p>
+        <pre><span class="c" data-i="m5.code.c"></span>
+<span class="k" data-i="m5.code.k1"></span> <span data-i="m5.code.v1"></span>
+<span class="k" data-i="m5.code.k2"></span> <span data-i="m5.code.v2"></span>
+<span class="k" data-i="m5.code.k3"></span> <span data-i="m5.code.v3"></span>
+<span class="k" data-i="m5.code.k4"></span> <span data-i="m5.code.v4"></span>
+<span class="k" data-i="m5.code.k5"></span> <span data-i="m5.code.v5"></span></pre>
+        <h3 data-i="m5.s3.h"></h3>
+        <p data-i="m5.s3.p"></p>
+        <h3 data-i="m5.s4.h"></h3>
+        <p data-i="m5.s4.p"></p>
+        <h3 data-i="m5.s5.h"></h3>
+        <p data-i="m5.s5.p"></p>
+        <div class="callout"><div class="lbl" data-i="m5.sum.l"></div><strong data-i="m5.sum.b"></strong></div>
+        <div class="pager">
+            <button onclick="go(4)"><span class="dir" data-i="nav.back"></span><span data-i="p5.prev"></span></button>
+            <button class="nxt" onclick="go(6)"><span class="dir" data-i="nav.next"></span><span data-i="p5.next"></span></button>
+        </div>
+    </section>
+
+    <section class="module" data-mod="6">
+        <div class="mod-head"><div class="num" data-i="m6.num"></div><h2 data-i="m6.h"></h2></div>
+        <p data-i="m6.p1"></p>
+        <div class="evalbox">
+            <label data-i="m6.label"></label>
+            <div class="qgrid" id="qgrid"></div>
+            <button class="evalbtn" id="evalBtn" onclick="runEvaluate()" data-i="m6.btn"></button>
+            <div class="eval-out" id="evalOut"></div>
+        </div>
+        <div class="callout"><div class="lbl" data-i="m6.how.l"></div><span data-i="m6.how.b"></span></div>
+        <div class="pager">
+            <button onclick="go(5)"><span class="dir" data-i="nav.back"></span><span data-i="p6.prev"></span></button>
+            <button class="nxt" onclick="go(0)"><span class="dir" data-i="nav.top"></span><span data-i="p6.next"></span></button>
+        </div>
+    </section>
+
+</div>
+
+<footer class="site" data-i="footer"></footer>
+
+<script>
+    const I={
+        ru:{
+            "brand":"Уровень 3 → 4",
+            "nav.next":"Дальше →","nav.back":"← Назад","nav.top":"↺ В начало",
+            "hero.eyebrow":"Курс · автономная автоматизация",
+            "hero.h1":"Перестать <em>вести диалог</em>.<br>Начать <em>ставить цель</em>.",
+            "hero.lede":"Шаг с третьего уровня работы с Claude на четвёртый — и принцип, по которому почти любой повторяющийся процесс можно отдать агенту.",
+            "lv1":"Чат","lv2":"+ Коннекторы","lv3":"Проекты + контекст","lv4":"Авто-режим","lv.you":"вы здесь","lv.goal":"цель",
+            "m0.p1":"На третьем уровне вы уже даёте Claude контекст: проект, документы, коннекторы к рабочим системам. Но вы по-прежнему <strong>ведёте каждый шаг</strong> — спрашиваете, читаете ответ, спрашиваете снова.",
+            "m0.p2":"Четвёртый уровень меняет роль. Вы перестаёте быть тем, кто на каждом шаге нажимает «дальше». Вы становитесь тем, кто <strong>формулирует цель и проверяет результат</strong>. Между этими двумя точками агент работает сам.",
+            "m0.idea.l":"Главная идея курса","m0.idea.b":"Этот курс не про вашу сегодняшнюю работу. Он про <strong>навык распознавать и собирать автономные процессы</strong> — любые. QA, отчётность, мониторинг, рутина с документами. Принцип один.",
+            "m0.toc.h":"Из чего состоит курс",
+            "m0.toc.1":"<strong>Карта уровней</strong> — что именно отличает 4-й от 3-го и как «думает» агент.",
+            "m0.toc.2":"<strong>Анатомия процесса</strong> — как понять, что вообще можно автоматизировать (интерактивный чек-лист).",
+            "m0.toc.3":"<strong>Два инструмента</strong> — Cowork против Claude Code, и когда какой.",
+            "m0.toc.4":"<strong>Контроль и доверие</strong> — права, границы, почему авто-режим всё ещё research preview.",
+            "m0.toc.5":"<strong>От ручного к автономному</strong> — рецепт превращения процесса в агента.",
+            "m0.toc.6":"<strong>Воркшоп</strong> — опишите свой процесс, и Claude оценит его пригодность к автономии вживую.",
+            "p0.next":"Модуль 1 · Карта уровней",
+            "m1.num":"Модуль 01","m1.h":"Карта уровней и как думает агент",
+            "m1.p1":"Разница между 3-м и 4-м уровнем — не в мощности модели. Модель та же. Разница в том, <strong>кто принимает решения между шагами</strong>.",
+            "m1.t.c1":"Уровень 3 · Проекты + контекст","m1.t.c2":"Уровень 4 · Авто-режим",
+            "m1.t.r1":"Ваша роль","m1.t.r1a":"Ведёте диалог, шаг за шагом","m1.t.r1b":"Ставите цель, проверяете итог",
+            "m1.t.r2":"Кто решает «что дальше»","m1.t.r2a":"Вы, после каждого ответа","m1.t.r2b":"Агент, в рамках ваших правил",
+            "m1.t.r3":"Действия в мире","m1.t.r3a":"Claude предлагает — вы выполняете","m1.t.r3b":"Агент выполняет сам (файлы, команды, системы)",
+            "m1.t.r4":"Длительность задачи","m1.t.r4a":"Минуты одного обмена","m1.t.r4b":"Многошаговые задачи от начала до конца",
+            "m1.t.r5":"Подтверждения","m1.t.r5a":"Каждый ответ — точка контроля","m1.t.r5b":"Только цель и финальная проверка",
+            "m1.loop.h":"Цикл агента","m1.loop.p":"Под «автономностью» скрывается простой повторяющийся цикл. Агент крутит его сам, пока цель не достигнута или не упрётся в границу прав.",
+            "m1.loop.1":"Смотрит контекст: файлы, историю, результаты","m1.loop.2":"Строит план из нескольких шагов","m1.loop.3":"Вызывает инструменты, пишет, запускает","m1.loop.4":"Проверяет результат, при ошибке — заново",
+            "m1.p2":"Именно шаг <strong>Verify</strong> отличает автономного агента от одиночного запроса. Если результат не проходит проверку — тесты упали, файл не тот — агент возвращается к Reason и пробует снова. Вы в это не вмешиваетесь.",
+            "m1.shift.l":"Сдвиг мышления","m1.shift.b":"На 3-м уровне вы думаете формулировками вопросов. На 4-м — <strong>формулировками целей и критериев приёмки</strong>: «что должно быть на выходе, чтобы я признал работу выполненной».",
+            "p1.prev":"Введение","p1.next":"Модуль 2 · Анатомия процесса",
+            "m2.num":"Модуль 02","m2.h":"Анатомия автоматизируемого процесса",
+            "m2.p1":"Не всё стоит отдавать агенту. Навык 4-го уровня начинается не с инструмента, а с умения <strong>посмотреть на процесс и сказать: вот это можно</strong>. Хорошие кандидаты на автономию имеют общие признаки.",
+            "m2.check.h":"Проверьте свой процесс","m2.check.p":"Отметьте всё, что верно про процесс, который вы хотите автоматизировать:",
+            "m2.c1t":"Чёткие критерии приёмки","m2.c1d":"Понятно, как выглядит «сделано правильно» — это можно проверить.",
+            "m2.c2t":"Воспроизводимость","m2.c2d":"Те же входные данные → тот же ожидаемый результат. Шаги повторяемы.",
+            "m2.c3t":"Повторяется регулярно","m2.c3d":"Вы делаете это снова и снова — еженедельно, при каждом релизе, по событию.",
+            "m2.c4t":"Преимущественно чтение и анализ","m2.c4d":"Сбор данных, разбор логов, сводки — а не необратимые опасные действия.",
+            "m2.c5t":"Результат можно автоматически проверить","m2.c5d":"Есть тест, схема, формат или правило, по которому видно успех.",
+            "m2.c6t":"Цена ошибки ограничена","m2.c6d":"Если агент ошибётся, это не катастрофа и легко откатывается.",
+            "m2.score0":"Отметьте пункты выше, чтобы увидеть оценку",
+            "m2.bad.h":"Плохие кандидаты — пока",
+            "m2.bad.1t":"Размытая цель.","m2.bad.1d":"«Сделай красиво» — агенту нечего проверять на шаге Verify.",
+            "m2.bad.2t":"Необратимые действия без отката.","m2.bad.2d":"Удаление прод-данных, отправка писем клиентам, платежи.",
+            "m2.bad.3t":"Требуется человеческое суждение на каждом шаге.","m2.bad.3d":"Если без вас никак — это ещё 3-й уровень.",
+            "m2.bad.4t":"Нет способа проверить результат.","m2.bad.4d":"Если успех нельзя измерить, агент не поймёт, что закончил.",
+            "m2.rule.l":"Правило большого пальца","m2.rule.b":"Начинайте автономию с задач, которые <strong>много читают и в конце выдают отчёт или сводку</strong>. Они безопасны: агент почти ничего не ломает, а пользы много. Анализ логов, ревью, аудит документации — идеальный первый шаг.",
+            "p2.prev":"Модуль 1","p2.next":"Модуль 3 · Два инструмента",
+            "m3.num":"Модуль 03","m3.h":"Два инструмента четвёртого уровня",
+            "m3.p1":"Autonomy у Claude живёт в двух продуктах. Они решают одну задачу — работать без вашего участия между целью и результатом — но рассчитаны на разных людей.",
+            "m3.t.r1":"Для кого","m3.t.r1a":"Любой работник умственного труда","m3.t.r1b":"Разработчики, инженеры",
+            "m3.t.r2":"Где живёт","m3.t.r2a":"Десктоп-приложение (Win / Mac)","m3.t.r2b":"Терминал / CLI, headless",
+            "m3.t.r3":"Код нужен?","m3.t.r3a":"Нет","m3.t.r3b":"Да, комфортнее с кодом",
+            "m3.t.r4":"Работает с","m3.t.r4a":"Локальные файлы, коннекторы (Slack, Jira, Drive…)","m3.t.r4b":"Кодовая база, git, shell, тесты",
+            "m3.t.r5":"Расписание / повтор","m3.t.r5a":"Проекты и планировщик задач","m3.t.r5b":"<code>/loop</code>, <code>/schedule</code>, фоновые агенты",
+            "m3.t.r6":"Идеально для","m3.t.r6a":"Документы, отчёты, триаж, сводки","m3.t.r6b":"Рефакторинг, фичи, миграции, CI",
+            "m3.cw.h":"Cowork — «Claude Code для всего остального»",
+            "m3.cw.p":"Cowork приносит агентность Claude Code на десктоп без терминала. Вы даёте ему доступ к папке и подключаете коннекторы, а он выполняет многошаговые задачи от начала до конца: разбирает пакет документов, собирает сводку, готовит черновик.",
+            "m3.cw.1":"Доступен на платных планах (Pro, Max, Team, Enterprise), только на десктопе.",
+            "m3.cw.2":"Коннекторы добавляются через <em class=\"term\">+ → Connectors</em>; их 50+ и список растёт.",
+            "m3.cw.3":"Плагины бундлят навыки, коннекторы и под-агентов в один пакет под вашу роль.",
+            "m3.cw.4":"Dispatch позволяет ставить задачи Cowork с телефона; Computer Use — управлять экраном приложений без коннектора.",
+            "m3.warn.l":"Осторожно с доступом к файлам","m3.warn.b":"Cowork работает по модели прав на папку. Давайте доступ только к нужным директориям и держите бэкап — автономный агент может тронуть больше файлов, чем вы ожидали.",
+            "m3.cc.h":"Claude Code — автономность в терминале",
+            "m3.cc.p":"Для кода автономный режим раскрывается через headless-запуск и команды повтора:",
+            "m3.code.c1":"# разовый автономный запуск без интерактивного интерфейса","m3.code.q1":"прогони тесты и почини падающие",
+            "m3.code.c2":"# повтор внутри сессии — каждые 10 минут","m3.code.q2":"прогони npm test и сообщи об ошибках",
+            "m3.code.c3":"# по расписанию — каждое утро в 9 проверять открытые PR","m3.code.q3":"проверь все открытые PR и собери отчёт",
+            "m3.cc.p2":"Фоновые агенты идут ещё дальше: вы запускаете задачу, продолжаете свою работу, а агент сам загружает нужные навыки и в конце отдаёт результат. Лучше всего им даются <strong>read-heavy</strong> задачи — ревью кода, анализ тестов, аудит безопасности.",
+            "p3.prev":"Модуль 2","p3.next":"Модуль 4 · Контроль",
+            "m4.num":"Модуль 04","m4.h":"Контроль, права и доверие агенту",
+            "m4.p1":"Автономность без границ — это риск, а не удобство. Четвёртый уровень — это <strong>не «отпустить руль», а заранее очертить, где агент может действовать сам</strong>, и где обязан остановиться.",
+            "m4.cls.h":"Что заменяет ваши подтверждения",
+            "m4.cls.p":"В авто-режиме вместо вопроса на каждое действие включается <em class=\"term\">safety classifier</em> — он оценивает каждое предлагаемое действие против:",
+            "m4.cls.1":"заданной вами политики прав (что вообще разрешено);","m4.cls.2":"текущей рабочей директории;",
+            "m4.cls.3a":"файла исключений","m4.cls.3b":"— что трогать нельзя.",
+            "m4.cls.p2":"Проходят без вашего участия только те действия, которые классификатор счёл безопасными в рамках политики. Остальное либо блокируется, либо требует вас.",
+            "m4.preview.l":"Важно: это research preview","m4.preview.b":"Авто-режим Claude Code — экспериментальная функция (research preview). Логика прав ещё дорабатывается, поведение может меняться между версиями. Не отдавайте ему то, цену ошибки чего вы не готовы заплатить.",
+            "m4.ladder.h":"Лестница доверия","m4.ladder.p":"Не прыгайте сразу в полную автономию. Поднимайтесь по ступеням, расширяя права по мере роста доверия:",
+            "m4.l1n":"1 · Plan","m4.l1d":"Агент только предлагает план, вы одобряете",
+            "m4.l2n":"2 · Allowlist","m4.l2d":"Разрешаете 3–5 команд, которым доверяете",
+            "m4.l3n":"3 · Auto","m4.l3d":"Классификатор решает в рамках политики",
+            "m4.l4n":"4 · Background","m4.l4d":"Фоновый агент с проверкой результата",
+            "m4.net.h":"Страховочная сетка",
+            "m4.net.1t":"Git-чекпойнты.","m4.net.1d":"Перед автономной работой — коммит или stash, чтобы откатиться одним движением.",
+            "m4.net.2t":"Минимальные права.","m4.net.2d":"Разрешайте ровно те инструменты, что нужны задаче, не больше.",
+            "m4.net.3t":"Тест как ворота.","m4.net.3d":"Встройте проверку (тесты, схему, формат) в цикл — агент сам поймёт, прошёл ли он.",
+            "m4.net.4t":"Лимиты.","m4.net.4d":"Ограничьте число итераций и бюджет, чтобы агент не крутился бесконечно.",
+            "m4.net.5d":"Явно перечислите, что агент не должен читать или трогать.",
+            "p4.prev":"Модуль 3","p4.next":"Модуль 5 · Рецепт",
+            "m5.num":"Модуль 05","m5.h":"От ручного процесса к автономному",
+            "m5.p1":"Рецепт, который работает для любого процесса — код это или документы. Пять шагов превращают «я делаю это руками» в «агент делает это сам».",
+            "m5.s1.h":"Шаг 1 · Запишите процесс как цель + критерии",
+            "m5.s1.p":"Перестаньте описывать <em>шаги</em>. Опишите <strong>цель</strong> и <strong>как проверить успех</strong>.",
+            "m5.ba.bl":"Было · шаги (3 уровень)","m5.ba.bb":"«Открой логи. Найди ошибки. Сгруппируй. Покажи мне. Теперь сделай таблицу. Теперь…»",
+            "m5.ba.al":"Стало · цель (4 уровень)","m5.ba.ab":"«Цель: отчёт по ошибкам за ночь, сгруппированный по сервису. Готово = таблица с колонками сервис/число/первый стектрейс, отсортирована по убыванию.»",
+            "m5.s2.h":"Шаг 2 · Зафиксируйте знания в SKILL.md",
+            "m5.s2.p":"То, что вы объясняете заново каждый раз — соглашения, форматы, где что лежит — вынесите в файл навыка. Агент прочитает его сам при старте.",
+            "m5.code.c":"# SKILL.md — пример",
+            "m5.code.k1":"Когда:","m5.code.v1":"нужен ночной отчёт по ошибкам",
+            "m5.code.k2":"Источник:","m5.code.v2":"логи в /var/log/app, формат JSON-lines",
+            "m5.code.k3":"Группировка:","m5.code.v3":"по полю service",
+            "m5.code.k4":"Вывод:","m5.code.v4":"Markdown-таблица, сортировка по count desc",
+            "m5.code.k5":"Готово, когда:","m5.code.v5":"таблица содержит все сервисы с ошибками",
+            "m5.s3.h":"Шаг 3 · Встройте автоматическую проверку",
+            "m5.s3.p":"Дайте агенту способ самому понять, что он закончил: тест, валидацию формата, правило. Без этого шаг Verify пустой.",
+            "m5.s4.h":"Шаг 4 · Поднимитесь по лестнице доверия",
+            "m5.s4.p":"Первый прогон — в режиме плана, вы смотрите. Дальше allowlist. Потом авто. Не наоборот.",
+            "m5.s5.h":"Шаг 5 · Добавьте повтор",
+            "m5.s5.p":"Когда процесс надёжен — повесьте его на расписание (<code>/schedule</code>) или событие. Теперь он происходит без вас вовсе.",
+            "m5.sum.l":"Суть рецепта в одной строке","m5.sum.b":"Цель вместо шагов → знания в файл → проверка в цикл → права по нарастающей → расписание. Этот шаблон переносится на любую рутину.",
+            "p5.prev":"Модуль 4","p5.next":"Модуль 6 · Воркшоп",
+            "m6.num":"Модуль 06","m6.h":"Воркшоп · оцените свой процесс",
+            "m6.p1":"Подумайте о процессе, который хотите автоматизировать — любом, не обязательно рабочем. Ответьте на шесть вопросов по принципам курса, и оценщик подскажет: пригоден ли он к автономии, какой инструмент выбрать и с чего начать.",
+            "m6.label":"Оцените процесс по шести признакам",
+            "m6.btn":"Показать вердикт",
+            "m6.how.l":"Как это работает","m6.how.b":"Оценщик работает полностью в браузере, без интернета и без обращений к Claude — его можно открыть откуда угодно. Логика повторяет чек-лист из Модуля 2.",
+            "m6.qyes":"Да","m6.qpart":"Частично","m6.qno":"Нет",
+            "m6.q1":"Есть чёткие критерии приёмки — понятно, как выглядит «сделано правильно».",
+            "m6.q2":"Процесс воспроизводим: те же входные данные дают тот же результат.",
+            "m6.q3":"Он повторяется регулярно (еженедельно, при каждом релизе, по событию).",
+            "m6.q4":"Это преимущественно чтение и анализ, а не необратимые опасные действия.",
+            "m6.q5":"Результат можно проверить автоматически (тест, схема, формат, правило).",
+            "m6.q6":"Цена ошибки ограничена — сбой не катастрофа и легко откатывается.",
+            "m6.qtool":"Где в основном живёт процесс?",
+            "m6.qtoolA":"Код, git, тесты, CI","m6.qtoolB":"Документы, таблицы, переписка","m6.qtoolC":"И то и другое",
+            "m6.needAll":"Ответьте на все вопросы, чтобы увидеть вердикт.",
+            "eval.fit":"Пригодность к автономии","eval.tool":"Рекомендуемый инструмент","eval.steps":"С чего начать","eval.missing":"Что усилить в первую очередь",
+            "v.ready":"Готов к автономии","v.partial":"Частично готов","v.notyet":"Пока рано",
+            "v.ready.fit":"Процесс набрал высокий балл по признакам пригодности. У него есть проверяемый результат и ограниченная цена ошибки — хороший кандидат, чтобы собрать агента.",
+            "v.partial.fit":"Процесс подходит частично. Основа есть, но один-два признака слабые — начните в режиме плана и с узкого набора прав, расширяя доверие постепенно.",
+            "v.notyet.fit":"Пока рано отдавать процесс агенту: ключевых признаков не хватает. Сначала добейтесь чётких критериев и проверяемого результата, иначе шаг Verify будет пустым.",
+            "tool.code":"Claude Code","tool.code.why":"Процесс живёт в коде — терминальный агент с git, тестами и /loop, /schedule подходит лучше всего.",
+            "tool.cowork":"Cowork","tool.cowork.why":"Процесс про документы и коммуникацию — десктопный агент с коннекторами (Slack, Jira, Drive) без кода подходит лучше всего.",
+            "tool.both":"Cowork или Claude Code","tool.both.why":"Процесс затрагивает и код, и документы. Выбирайте по тому, где находится проверяемый результат: код → Claude Code, файлы и переписка → Cowork.",
+            "steps.ready1":"Запишите процесс как цель + критерии приёмки (Модуль 5, шаг 1).","steps.ready2":"Вынесите повторяющиеся знания в SKILL.md, встройте проверку в цикл.","steps.ready3":"Первый прогон — в режиме плана, затем allowlist, затем авто.",
+            "steps.partial1":"Закройте слабые признаки ниже, прежде чем повышать автономию.","steps.partial2":"Сделайте первый прогон в режиме плана и наблюдайте за каждым шагом.","steps.partial3":"Разрешите 3–5 проверенных команд, расширяйте права по мере доверия.",
+            "steps.notyet1":"Сформулируйте, как именно выглядит «готово» — проверяемый критерий.","steps.notyet2":"Добавьте способ автоматически проверить результат (тест, формат, правило).","steps.notyet3":"Пока держите процесс на 3-м уровне: цель + контекст, шаги ведёте сами.",
+            "miss.q1":"нет чётких критериев приёмки","miss.q2":"процесс плохо воспроизводим","miss.q3":"процесс нерегулярный","miss.q4":"есть необратимые действия","miss.q5":"результат нельзя проверить автоматически","miss.q6":"высокая цена ошибки",
+            "miss.none":"Все шесть признаков в порядке — слабых мест нет.","miss.prefix":"Слабые места: ",
+            "p6.prev":"Модуль 5","p6.next":"Введение",
+            "footer":"Интерактивный курс · переход с 3-го на 4-й уровень работы с Claude"
+        },
+        en:{
+            "brand":"Level 3 → 4",
+            "nav.next":"Next →","nav.back":"← Back","nav.top":"↺ To start",
+            "hero.eyebrow":"Course · autonomous automation",
+            "hero.h1":"Stop <em>running the conversation</em>.<br>Start <em>setting the goal</em>.",
+            "hero.lede":"The move from level three to level four with Claude — and the principle that lets you hand almost any repeating process to an agent.",
+            "lv1":"Chat","lv2":"+ Connectors","lv3":"Projects + context","lv4":"Auto mode","lv.you":"you are here","lv.goal":"goal",
+            "m0.p1":"At level three you already give Claude context: a project, documents, connectors to your work systems. But you still <strong>drive every step</strong> — you ask, read the answer, ask again.",
+            "m0.p2":"Level four changes your role. You stop being the one who hits «next» at every step. You become the one who <strong>states the goal and checks the result</strong>. Between those two points the agent works on its own.",
+            "m0.idea.l":"The core idea","m0.idea.b":"This course isn't about your current job. It's about <strong>the skill of spotting and assembling autonomous processes</strong> — any of them. QA, reporting, monitoring, document routine. The principle is one.",
+            "m0.toc.h":"What the course covers",
+            "m0.toc.1":"<strong>The level map</strong> — what exactly separates 4 from 3, and how an agent «thinks».",
+            "m0.toc.2":"<strong>Anatomy of a process</strong> — how to tell what can be automated (interactive checklist).",
+            "m0.toc.3":"<strong>Two tools</strong> — Cowork vs Claude Code, and when to use which.",
+            "m0.toc.4":"<strong>Control and trust</strong> — permissions, boundaries, why auto mode is still a research preview.",
+            "m0.toc.5":"<strong>From manual to autonomous</strong> — the recipe for turning a process into an agent.",
+            "m0.toc.6":"<strong>Workshop</strong> — describe your process and Claude evaluates its fit for autonomy live.",
+            "p0.next":"Module 1 · The level map",
+            "m1.num":"Module 01","m1.h":"The level map and how an agent thinks",
+            "m1.p1":"The gap between level 3 and 4 isn't model power. The model is the same. The gap is <strong>who decides between the steps</strong>.",
+            "m1.t.c1":"Level 3 · Projects + context","m1.t.c2":"Level 4 · Auto mode",
+            "m1.t.r1":"Your role","m1.t.r1a":"You run the dialogue, step by step","m1.t.r1b":"You set the goal, check the outcome",
+            "m1.t.r2":"Who decides «what's next»","m1.t.r2a":"You, after every reply","m1.t.r2b":"The agent, within your rules",
+            "m1.t.r3":"Actions in the world","m1.t.r3a":"Claude suggests — you execute","m1.t.r3b":"The agent acts itself (files, commands, systems)",
+            "m1.t.r4":"Task duration","m1.t.r4a":"The minutes of one exchange","m1.t.r4b":"Multi-step tasks end to end",
+            "m1.t.r5":"Confirmations","m1.t.r5a":"Every reply is a control point","m1.t.r5b":"Only the goal and a final check",
+            "m1.loop.h":"The agent loop","m1.loop.p":"Behind «autonomy» sits a simple repeating loop. The agent spins it itself until the goal is met or it hits a permission boundary.",
+            "m1.loop.1":"Reads context: files, history, results","m1.loop.2":"Builds a multi-step plan","m1.loop.3":"Calls tools, writes, runs","m1.loop.4":"Checks the result; on failure, retries",
+            "m1.p2":"It's the <strong>Verify</strong> step that separates an autonomous agent from a single request. If the result fails the check — tests broke, wrong file — the agent goes back to Reason and tries again. You don't step in.",
+            "m1.shift.l":"The mindset shift","m1.shift.b":"At level 3 you think in question phrasings. At level 4 — in <strong>goals and acceptance criteria</strong>: «what must the output be for me to call the work done».",
+            "p1.prev":"Intro","p1.next":"Module 2 · Anatomy of a process",
+            "m2.num":"Module 02","m2.h":"Anatomy of an automatable process",
+            "m2.p1":"Not everything should go to an agent. The level-4 skill starts not with a tool but with the ability to <strong>look at a process and say: this one works</strong>. Good candidates for autonomy share traits.",
+            "m2.check.h":"Test your process","m2.check.p":"Check everything that's true about the process you want to automate:",
+            "m2.c1t":"Clear acceptance criteria","m2.c1d":"It's obvious what «done right» looks like — and it's checkable.",
+            "m2.c2t":"Reproducibility","m2.c2d":"Same inputs → same expected result. The steps repeat.",
+            "m2.c3t":"Recurs regularly","m2.c3d":"You do it again and again — weekly, every release, on an event.",
+            "m2.c4t":"Mostly reading and analysis","m2.c4d":"Gathering data, parsing logs, summaries — not irreversible dangerous actions.",
+            "m2.c5t":"Result is automatically verifiable","m2.c5d":"There's a test, schema, format or rule that shows success.",
+            "m2.c6t":"Bounded cost of error","m2.c6d":"If the agent slips, it's not a catastrophe and rolls back easily.",
+            "m2.score0":"Check items above to see your score",
+            "m2.bad.h":"Bad candidates — for now",
+            "m2.bad.1t":"Fuzzy goal.","m2.bad.1d":"«Make it nice» — the agent has nothing to check at Verify.",
+            "m2.bad.2t":"Irreversible actions with no rollback.","m2.bad.2d":"Deleting prod data, emailing customers, payments.",
+            "m2.bad.3t":"Human judgment needed at every step.","m2.bad.3d":"If nothing moves without you, that's still level 3.",
+            "m2.bad.4t":"No way to verify the result.","m2.bad.4d":"If success can't be measured, the agent won't know it's done.",
+            "m2.rule.l":"Rule of thumb","m2.rule.b":"Start autonomy with tasks that <strong>read a lot and end in a report or summary</strong>. They're safe: the agent breaks almost nothing, the payoff is high. Log analysis, reviews, doc audits — the ideal first step.",
+            "p2.prev":"Module 1","p2.next":"Module 3 · Two tools",
+            "m3.num":"Module 03","m3.h":"The two level-four tools",
+            "m3.p1":"Claude's autonomy lives in two products. They solve one thing — working without you between goal and result — but are built for different people.",
+            "m3.t.r1":"For whom","m3.t.r1a":"Any knowledge worker","m3.t.r1b":"Developers, engineers",
+            "m3.t.r2":"Where it lives","m3.t.r2a":"Desktop app (Win / Mac)","m3.t.r2b":"Terminal / CLI, headless",
+            "m3.t.r3":"Code needed?","m3.t.r3a":"No","m3.t.r3b":"Yes, smoother with code",
+            "m3.t.r4":"Works with","m3.t.r4a":"Local files, connectors (Slack, Jira, Drive…)","m3.t.r4b":"Codebase, git, shell, tests",
+            "m3.t.r5":"Schedule / repeat","m3.t.r5a":"Projects and a task scheduler","m3.t.r5b":"<code>/loop</code>, <code>/schedule</code>, background agents",
+            "m3.t.r6":"Ideal for","m3.t.r6a":"Documents, reports, triage, summaries","m3.t.r6b":"Refactors, features, migrations, CI",
+            "m3.cw.h":"Cowork — «Claude Code for everything else»",
+            "m3.cw.p":"Cowork brings Claude Code's agency to the desktop without a terminal. You give it a folder and connect connectors, and it runs multi-step tasks end to end: parses a batch of documents, builds a summary, drafts a reply.",
+            "m3.cw.1":"Available on paid plans (Pro, Max, Team, Enterprise), desktop only.",
+            "m3.cw.2":"Connectors are added via <em class=\"term\">+ → Connectors</em>; 50+ and growing.",
+            "m3.cw.3":"Plugins bundle skills, connectors and sub-agents into one package for your role.",
+            "m3.cw.4":"Dispatch lets you assign Cowork tasks from your phone; Computer Use drives app screens with no connector.",
+            "m3.warn.l":"Careful with file access","m3.warn.b":"Cowork runs on a folder-permission model. Grant access only to the directories you need and keep a backup — an autonomous agent may touch more files than you expect.",
+            "m3.cc.h":"Claude Code — autonomy in the terminal",
+            "m3.cc.p":"For code, auto mode opens up through headless runs and repeat commands:",
+            "m3.code.c1":"# one-off autonomous run with no interactive UI","m3.code.q1":"run the tests and fix the failing ones",
+            "m3.code.c2":"# repeat within a session — every 10 minutes","m3.code.q2":"run npm test and report errors",
+            "m3.code.c3":"# on schedule — check open PRs every morning at 9","m3.code.q3":"check all open PRs and build a report",
+            "m3.cc.p2":"Background agents go further: you launch a task, get on with your work, and the agent loads the skills it needs and hands back the result at the end. They're best at <strong>read-heavy</strong> tasks — code review, test analysis, security audits.",
+            "p3.prev":"Module 2","p3.next":"Module 4 · Control",
+            "m4.num":"Module 04","m4.h":"Control, permissions and trusting the agent",
+            "m4.p1":"Autonomy without boundaries is a risk, not a convenience. Level four is <strong>not «letting go of the wheel» but drawing in advance where the agent may act on its own</strong> and where it must stop.",
+            "m4.cls.h":"What replaces your confirmations",
+            "m4.cls.p":"In auto mode, instead of a prompt on every action, a <em class=\"term\">safety classifier</em> kicks in — it weighs each proposed action against:",
+            "m4.cls.1":"the permission policy you set (what's allowed at all);","m4.cls.2":"the current working directory;",
+            "m4.cls.3a":"the exclusion file","m4.cls.3b":"— what must not be touched.",
+            "m4.cls.p2":"Only actions the classifier deems safe within policy pass without you. The rest is blocked or escalated to you.",
+            "m4.preview.l":"Important: this is a research preview","m4.preview.b":"Claude Code's auto mode is an experimental feature (research preview). The permission logic is still being refined and behavior may change between versions. Don't hand it anything whose cost of error you aren't willing to pay.",
+            "m4.ladder.h":"The trust ladder","m4.ladder.p":"Don't leap straight into full autonomy. Climb the rungs, widening permissions as trust grows:",
+            "m4.l1n":"1 · Plan","m4.l1d":"The agent only proposes a plan; you approve",
+            "m4.l2n":"2 · Allowlist","m4.l2d":"You allow 3–5 commands you trust",
+            "m4.l3n":"3 · Auto","m4.l3d":"The classifier decides within policy",
+            "m4.l4n":"4 · Background","m4.l4d":"A background agent with result-checking",
+            "m4.net.h":"The safety net",
+            "m4.net.1t":"Git checkpoints.","m4.net.1d":"Before autonomous work — commit or stash, so you can roll back in one move.",
+            "m4.net.2t":"Minimal permissions.","m4.net.2d":"Allow exactly the tools the task needs, no more.",
+            "m4.net.3t":"Tests as the gate.","m4.net.3d":"Build a check (tests, schema, format) into the loop — the agent learns whether it passed.",
+            "m4.net.4t":"Limits.","m4.net.4d":"Cap the number of iterations and budget so the agent doesn't spin forever.",
+            "m4.net.5d":"Explicitly list what the agent must not read or touch.",
+            "p4.prev":"Module 3","p4.next":"Module 5 · The recipe",
+            "m5.num":"Module 05","m5.h":"From a manual process to an autonomous one",
+            "m5.p1":"A recipe that works for any process — code or documents. Five steps turn «I do this by hand» into «the agent does it itself».",
+            "m5.s1.h":"Step 1 · Write the process as goal + criteria",
+            "m5.s1.p":"Stop describing <em>steps</em>. Describe the <strong>goal</strong> and <strong>how to verify success</strong>.",
+            "m5.ba.bl":"Before · steps (level 3)","m5.ba.bb":"«Open the logs. Find errors. Group them. Show me. Now make a table. Now…»",
+            "m5.ba.al":"After · goal (level 4)","m5.ba.ab":"«Goal: an overnight error report grouped by service. Done = a table with service/count/first stacktrace columns, sorted descending.»",
+            "m5.s2.h":"Step 2 · Capture knowledge in SKILL.md",
+            "m5.s2.p":"Whatever you explain anew each time — conventions, formats, where things live — move it into a skill file. The agent reads it itself on start.",
+            "m5.code.c":"# SKILL.md — example",
+            "m5.code.k1":"When:","m5.code.v1":"an overnight error report is needed",
+            "m5.code.k2":"Source:","m5.code.v2":"logs in /var/log/app, JSON-lines format",
+            "m5.code.k3":"Group by:","m5.code.v3":"the service field",
+            "m5.code.k4":"Output:","m5.code.v4":"Markdown table, sorted by count desc",
+            "m5.code.k5":"Done when:","m5.code.v5":"the table holds every service with errors",
+            "m5.s3.h":"Step 3 · Build in an automatic check",
+            "m5.s3.p":"Give the agent a way to know it's finished: a test, a format validation, a rule. Without it the Verify step is empty.",
+            "m5.s4.h":"Step 4 · Climb the trust ladder",
+            "m5.s4.p":"First run in plan mode, you watch. Then allowlist. Then auto. Not the other way around.",
+            "m5.s5.h":"Step 5 · Add repetition",
+            "m5.s5.p":"Once the process is reliable — put it on a schedule (<code>/schedule</code>) or an event. Now it happens without you at all.",
+            "m5.sum.l":"The recipe in one line","m5.sum.b":"Goal instead of steps → knowledge into a file → a check in the loop → permissions by degrees → a schedule. This template carries to any routine.",
+            "p5.prev":"Module 4","p5.next":"Module 6 · Workshop",
+            "m6.num":"Module 06","m6.h":"Workshop · evaluate your process",
+            "m6.p1":"Think of a process you want to automate — any one, not necessarily work. Answer six questions based on the course principles and the evaluator tells you: is it fit for autonomy, which tool to pick, and where to start.",
+            "m6.label":"Rate your process on six traits",
+            "m6.btn":"Show verdict",
+            "m6.how.l":"How this works","m6.how.b":"The evaluator runs entirely in your browser — no internet, no calls to Claude — so it works anywhere you host it. The logic mirrors the Module 2 checklist.",
+            "m6.qyes":"Yes","m6.qpart":"Partly","m6.qno":"No",
+            "m6.q1":"There are clear acceptance criteria — it's obvious what «done right» looks like.",
+            "m6.q2":"The process is reproducible: the same inputs give the same result.",
+            "m6.q3":"It recurs regularly (weekly, every release, on an event).",
+            "m6.q4":"It's mostly reading and analysis, not irreversible dangerous actions.",
+            "m6.q5":"The result can be verified automatically (test, schema, format, rule).",
+            "m6.q6":"The cost of error is bounded — a failure isn't a catastrophe and rolls back.",
+            "m6.qtool":"Where does the process mostly live?",
+            "m6.qtoolA":"Code, git, tests, CI","m6.qtoolB":"Documents, sheets, messages","m6.qtoolC":"Both",
+            "m6.needAll":"Answer all the questions to see the verdict.",
+            "eval.fit":"Fit for autonomy","eval.tool":"Recommended tool","eval.steps":"Where to start","eval.missing":"Strengthen first",
+            "v.ready":"Ready for autonomy","v.partial":"Partly ready","v.notyet":"Not yet",
+            "v.ready.fit":"The process scores high on the fitness traits. It has a verifiable result and a bounded cost of error — a good candidate to assemble into an agent.",
+            "v.partial.fit":"The process is a partial fit. The base is there but one or two traits are weak — start in plan mode with a narrow set of permissions and widen trust gradually.",
+            "v.notyet.fit":"It's too early to hand this to an agent: key traits are missing. First secure clear criteria and a verifiable result, otherwise the Verify step will be empty.",
+            "tool.code":"Claude Code","tool.code.why":"The process lives in code — a terminal agent with git, tests and /loop, /schedule fits best.",
+            "tool.cowork":"Cowork","tool.cowork.why":"The process is about documents and communication — a desktop agent with connectors (Slack, Jira, Drive) and no code fits best.",
+            "tool.both":"Cowork or Claude Code","tool.both.why":"The process spans both code and documents. Pick by where the verifiable result lives: code → Claude Code, files and messages → Cowork.",
+            "steps.ready1":"Write the process as goal + acceptance criteria (Module 5, step 1).","steps.ready2":"Move recurring knowledge into SKILL.md, build a check into the loop.","steps.ready3":"First run in plan mode, then allowlist, then auto.",
+            "steps.partial1":"Close the weak traits below before raising autonomy.","steps.partial2":"Do the first run in plan mode and watch every step.","steps.partial3":"Allow 3–5 trusted commands, widen permissions as trust grows.",
+            "steps.notyet1":"Define exactly what «done» looks like — a verifiable criterion.","steps.notyet2":"Add a way to verify the result automatically (test, format, rule).","steps.notyet3":"For now keep the process at level 3: goal + context, you drive the steps.",
+            "miss.q1":"no clear acceptance criteria","miss.q2":"poorly reproducible","miss.q3":"not recurring","miss.q4":"irreversible actions present","miss.q5":"result not auto-verifiable","miss.q6":"high cost of error",
+            "miss.none":"All six traits are in good shape — no weak spots.","miss.prefix":"Weak spots: ",
+            "p6.prev":"Module 5","p6.next":"Intro",
+            "footer":"Interactive course · the move from level 3 to level 4 with Claude"
+        }
+    };
+
+    let lang='en', current=0;
+    function setLang(l){
+        lang=l;
+        document.documentElement.lang=l;
+        document.getElementById('lang-ru').classList.toggle('active',l==='ru');
+        document.getElementById('lang-en').classList.toggle('active',l==='en');
+        const d=I[l];
+        document.querySelectorAll('[data-i]').forEach(el=>{const k=el.getAttribute('data-i');if(d[k]!==undefined)el.innerHTML=d[k];});
+        document.querySelectorAll('[data-i-ph]').forEach(el=>{const k=el.getAttribute('data-i-ph');if(d[k]!==undefined)el.placeholder=d[k];});
+        buildNav();
+        refreshScore();
+        buildQuestions();
+    }
+    const navTitles={
+        ru:['Введение','1 · Карта','2 · Процесс','3 · Инструменты','4 · Контроль','5 · Рецепт','6 · Воркшоп'],
+        en:['Intro','1 · Map','2 · Process','3 · Tools','4 · Control','5 · Recipe','6 · Workshop']
+    };
+    function buildNav(){
+        const nav=document.getElementById('modnav');nav.innerHTML='';
+        navTitles[lang].forEach((t,i)=>{
+            const b=document.createElement('button');b.textContent=t;b.onclick=()=>go(i);
+            if(i===current)b.classList.add('active');nav.appendChild(b);
+        });
+    }
+    function go(i){
+        current=i;
+        document.querySelectorAll('.module').forEach(m=>m.classList.toggle('active',+m.dataset.mod===i));
+        document.querySelectorAll('#modnav button').forEach((b,bi)=>b.classList.toggle('active',bi===i));
+        window.scrollTo({top:0,behavior:'smooth'});
+    }
+    function toggleChk(el){el.classList.toggle('on');refreshScore();}
+    function refreshScore(){
+        const s=document.getElementById('chkScore');if(!s)return;
+        const n=document.querySelectorAll('#checklist .chk.on').length;
+        s.className='chk-score';
+        const T={
+            ru:{z:'Отметьте пункты выше, чтобы увидеть оценку',
+                lo:n=>`${n} из 6 — рано для автономии. Сначала добавьте чёткие критерии и проверку результата.`,
+                mi:n=>`${n} из 6 — частично готов. Начните с режима плана и узкого набора прав.`,
+                hi:n=>`${n} из 6 — отличный кандидат на автономию. Можно собирать агента.`},
+            en:{z:'Check items above to see your score',
+                lo:n=>`${n} of 6 — too early for autonomy. First add clear criteria and a result check.`,
+                mi:n=>`${n} of 6 — partly ready. Start in plan mode with a narrow set of permissions.`,
+                hi:n=>`${n} of 6 — an excellent candidate for autonomy. You can assemble the agent.`}
+        }[lang];
+        if(n===0){s.textContent=T.z;}
+        else if(n<=2){s.textContent=T.lo(n);}
+        else if(n<=4){s.classList.add('mid');s.textContent=T.mi(n);}
+        else{s.classList.add('good');s.textContent=T.hi(n);}
+    }
+    /* ── offline evaluator ── */
+    const answers={q1:null,q2:null,q3:null,q4:null,q5:null,q6:null,tool:null};
+    function buildQuestions(){
+        const grid=document.getElementById('qgrid');if(!grid)return;
+        const d=I[lang];
+        const trait=['q1','q2','q3','q4','q5','q6'];
+        let html='';
+        trait.forEach(q=>{
+            html+=`<div class="qrow"><div class="qt">${d['m6.'+q]}</div><div class="qopts" data-q="${q}">`+
+                `<button data-v="yes" onclick="pick(this)">${d['m6.qyes']}</button>`+
+                `<button data-v="part" onclick="pick(this)">${d['m6.qpart']}</button>`+
+                `<button data-v="no" onclick="pick(this)">${d['m6.qno']}</button>`+
+                `</div></div>`;
+        });
+        html+=`<div class="qrow"><div class="qt">${d['m6.qtool']}</div><div class="qopts" data-q="tool">`+
+            `<button data-v="code" onclick="pick(this)">${d['m6.qtoolA']}</button>`+
+            `<button data-v="cowork" onclick="pick(this)">${d['m6.qtoolB']}</button>`+
+            `<button data-v="both" onclick="pick(this)">${d['m6.qtoolC']}</button>`+
+            `</div></div>`;
+        grid.innerHTML=html;
+        // restore selections
+        Object.keys(answers).forEach(q=>{
+            if(answers[q]){
+                const b=grid.querySelector(`[data-q="${q}"] [data-v="${answers[q]}"]`);
+                if(b)markSel(b);
+            }
+        });
+    }
+    function markSel(btn){
+        const wrap=btn.parentElement;
+        wrap.querySelectorAll('button').forEach(b=>b.classList.remove('sel-yes','sel-part','sel-no'));
+        const v=btn.getAttribute('data-v');
+        const cls=(v==='yes'||v==='code')?'sel-yes':(v==='part'||v==='cowork')?'sel-part':(v==='no'||v==='both')?'sel-no':'sel-part';
+        if(wrap.getAttribute('data-q')==='tool'){btn.classList.add('sel-yes');}
+        else{btn.classList.add(cls);}
+    }
+    function pick(btn){
+        const q=btn.parentElement.getAttribute('data-q');
+        answers[q]=btn.getAttribute('data-v');
+        markSel(btn);
+    }
+    function runEvaluate(){
+        const out=document.getElementById('evalOut');
+        const d=I[lang];
+        const traits=['q1','q2','q3','q4','q5','q6'];
+        if(traits.some(q=>!answers[q])||!answers.tool){
+            out.className='eval-out show';out.innerHTML=`<div class="eval-err">${d['m6.needAll']}</div>`;return;
+        }
+        const val={yes:1,part:.5,no:0};
+        let score=0;traits.forEach(q=>score+=val[answers[q]]);
+        const pct=Math.round(score/6*100);
+        let verdict=score>=5?'ready':score>=3.5?'partial':'notyet';
+        const vClass=verdict==='ready'?'ready':verdict==='partial'?'partial':'notyet';
+        // tool
+        let tk=answers.tool==='code'?'code':answers.tool==='cowork'?'cowork':'both';
+        // weak spots
+        const weak=traits.filter(q=>answers[q]!=='yes').map(q=>d['miss.'+q]);
+        const missText=weak.length?d['miss.prefix']+weak.join('; ')+'.':d['miss.none'];
+        const steps=[d['steps.'+verdict+'1'],d['steps.'+verdict+'2'],d['steps.'+verdict+'3']];
+
+        let html=`<span class="verdict ${vClass}">${d['v.'+verdict]} · ${pct}%</span>`;
+        html+=`<div class="eval-meter"><i style="width:${pct}%;background:${verdict==='ready'?'var(--moss)':verdict==='partial'?'var(--gold)':'var(--rust)'}"></i></div>`;
+        html+=`<div class="eval-card"><h4>${d['eval.fit']}</h4><p>${d['v.'+verdict+'.fit']}</p></div>`;
+        html+=`<div class="eval-card"><h4>${d['eval.tool']}: ${d['tool.'+tk]}</h4><p>${d['tool.'+tk+'.why']}</p></div>`;
+        html+=`<div class="eval-card"><h4>${d['eval.steps']}</h4><ol>`+steps.map(s=>`<li>${s}</li>`).join('')+`</ol></div>`;
+        html+=`<div class="eval-card"><h4>${d['eval.missing']}</h4><p>${missText}</p></div>`;
+        out.className='eval-out show';out.innerHTML=html;
+    }
+    function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+    setLang('en');
+</script>
+</body>
+</html>
