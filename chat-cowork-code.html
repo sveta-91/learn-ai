@@ -138,6 +138,19 @@ footer.site{padding:40px 0;text-align:center;font-family:'Spline Sans Mono',mono
 .shots{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:center;margin:28px 0}
 .shots img{height:46px;width:auto;border:1px solid var(--line);border-radius:11px;background:#fff;box-shadow:0 4px 14px var(--shadow);padding:4px}
 .shots figcaption{flex-basis:100%;text-align:center;font-family:'Spline Sans Mono',monospace;font-size:.72rem;opacity:.6;margin-top:8px;letter-spacing:.03em}
+a.brand{text-decoration:none;color:var(--ink)}
+.brand .home{color:var(--rust);font-weight:700;opacity:.6;transition:opacity .15s}
+a.brand:hover .home{opacity:1}
+.coursenav{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;max-width:880px;margin:0 auto;padding:34px 24px 6px}
+.coursenav a{text-decoration:none;color:var(--ink)}
+.coursenav .cn-all{justify-self:center;font-family:'Spline Sans Mono',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--line);border-radius:8px;padding:9px 16px;transition:all .18s;white-space:nowrap}
+.coursenav .cn-all:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.coursenav .cn-prev,.coursenav .cn-next{display:flex;flex-direction:column;gap:3px;border:1px solid var(--line);border-radius:10px;padding:12px 16px;transition:all .18s;max-width:48%}
+.coursenav .cn-next{text-align:right;justify-self:end}
+.coursenav .cn-prev:hover,.coursenav .cn-next:hover{border-color:var(--rust);background:var(--paper-2)}
+.coursenav .cn-k{font-family:'Spline Sans Mono',monospace;font-size:.62rem;text-transform:uppercase;letter-spacing:.09em;opacity:.55}
+.coursenav .cn-n{font-family:'Fraunces',serif;font-weight:600;font-size:1rem;color:var(--rust-dk);line-height:1.1}
+@media(max-width:560px){.coursenav{grid-template-columns:1fr;gap:10px}.coursenav .cn-prev,.coursenav .cn-next{max-width:none;text-align:left;justify-self:stretch}.coursenav .cn-next{text-align:left}}
 </style>
 </head>
 
@@ -145,7 +158,7 @@ footer.site{padding:40px 0;text-align:center;font-family:'Spline Sans Mono',mono
 
 <header class="top">
   <div class="top-inner">
-    <div class="brand"><span class="dot"></span><span data-i="brand"></span></div>
+    <a class="brand" href="index.html"><span class="home">←</span><span class="dot"></span><span data-i="brand"></span></a>
     <div class="top-right">
       <nav class="modnav" id="modnav"></nav>
       <div class="langtog">
@@ -317,6 +330,11 @@ footer.site{padding:40px 0;text-align:center;font-family:'Spline Sans Mono',mono
 
 </div>
 
+<nav class="coursenav">
+  <span></span>
+  <a class="cn-all" href="index.html" data-i="cn.all"></a>
+  <a class="cn-next" href="claude-code-context.html"><span class="cn-k" data-i="cn.nextK"></span><span class="cn-n" data-i="cn.next"></span></a>
+</nav>
 <footer class="site"><span data-i="foot"></span></footer>
 
 <script>
@@ -324,6 +342,7 @@ let lang='en', current=0;
 const I={
 ru:{
  "brand":"Чат · Cowork · Code",
+ "cn.all":"Все курсы","cn.nextK":"Следующий курс →","cn.next":"Контекст проекта",
  "hero.eyebrow":"Курс · способы работать с Claude",
  "hero.h1":"Один Claude.<br><em>Три режима, четыре поверхности.</em>",
  "hero.lede":"Чат, Cowork и Code — это не три приложения, а три вкладки одного. А запускать Claude можно в браузере, в десктоп-приложении, в терминале и без интерфейса вовсе. Разберёмся, что когда выбирать.",
@@ -451,6 +470,7 @@ ru:{
 },
 en:{
  "brand":"Chat · Cowork · Code",
+ "cn.all":"All courses","cn.nextK":"Next course →","cn.next":"Project context",
  "hero.eyebrow":"Course · ways to use Claude",
  "hero.h1":"One Claude.<br><em>Three modes, four surfaces.</em>",
  "hero.lede":"Chat, Cowork and Code aren't three apps — they're three tabs of one. And you can run Claude in a browser, in the desktop app, in the terminal, or with no interface at all. Let's sort out what to reach for when.",

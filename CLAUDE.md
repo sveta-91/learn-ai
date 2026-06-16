@@ -30,6 +30,13 @@ Each file follows the same pattern, so changes to one usually apply to the other
 
 4. **Interactive widgets** are plain JS reading the same `I[lang]` dictionary. E.g. `claude-code-context.html` has an offline "repo-context builder" — a weighted checklist (`checked`/`weights`, `buildQuestions()`, `toggleQ()`, `runEvaluate()`) that scores readiness and pulls verdict/`miss.*`/`have.*` strings from `I`.
 
+## Cross-course navigation
+
+Each deck links to its neighbours so the three read as a sequence (order = the chooser order: `chat-cowork-code` → `claude-code-context` → `auto-mode`):
+- The header **brand is an `<a href="index.html">`** with a leading `←` (`.home` span) — a persistent "back to all courses".
+- A **`.coursenav` rail above the footer** holds "All courses" (centre) plus Prev/Next *course* links with the neighbour's short name (`cn.prev*`/`cn.next*` i18n keys). It's a 3-column grid; the missing side on the first/last deck is an empty `<span></span>` to keep "All courses" centred. This is separate from the in-module `.pager` (prev/next *module*).
+- When adding or reordering courses, update each affected deck's rail `href`s and the `cn.prev`/`cn.next` neighbour-name keys (both `ru` and `en`), and the chooser cards in `index.html`.
+
 ## Working conventions
 
 - **Keep `ru` and `en` key sets identical.** A key present in one language and missing in the other shows blank in that language. When adding content, add the `data-i` element plus both translations together.

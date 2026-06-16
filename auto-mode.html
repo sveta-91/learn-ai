@@ -149,13 +149,26 @@
             .levels-strip .lv{min-width:33%;border-bottom:1px solid var(--line)}
             .loop .arrow{transform:rotate(90deg)}
         }
-    </style>
+    a.brand{text-decoration:none;color:var(--ink)}
+.brand .home{color:var(--rust);font-weight:700;opacity:.6;transition:opacity .15s}
+a.brand:hover .home{opacity:1}
+.coursenav{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;max-width:880px;margin:0 auto;padding:34px 24px 6px}
+.coursenav a{text-decoration:none;color:var(--ink)}
+.coursenav .cn-all{justify-self:center;font-family:'Spline Sans Mono',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--line);border-radius:8px;padding:9px 16px;transition:all .18s;white-space:nowrap}
+.coursenav .cn-all:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.coursenav .cn-prev,.coursenav .cn-next{display:flex;flex-direction:column;gap:3px;border:1px solid var(--line);border-radius:10px;padding:12px 16px;transition:all .18s;max-width:48%}
+.coursenav .cn-next{text-align:right;justify-self:end}
+.coursenav .cn-prev:hover,.coursenav .cn-next:hover{border-color:var(--rust);background:var(--paper-2)}
+.coursenav .cn-k{font-family:'Spline Sans Mono',monospace;font-size:.62rem;text-transform:uppercase;letter-spacing:.09em;opacity:.55}
+.coursenav .cn-n{font-family:'Fraunces',serif;font-weight:600;font-size:1rem;color:var(--rust-dk);line-height:1.1}
+@media(max-width:560px){.coursenav{grid-template-columns:1fr;gap:10px}.coursenav .cn-prev,.coursenav .cn-next{max-width:none;text-align:left;justify-self:stretch}.coursenav .cn-next{text-align:left}}
+</style>
 </head>
 <body>
 
 <header class="top">
     <div class="top-inner">
-        <div class="brand"><span class="dot"></span><span data-i="brand"></span></div>
+        <a class="brand" href="index.html"><span class="home">←</span><span class="dot"></span><span data-i="brand"></span></a>
         <div class="top-right">
             <nav class="modnav" id="modnav"></nav>
             <div class="langtog">
@@ -375,12 +388,18 @@ claude <span class="k">--print</span> <span class="k">--permission-mode</span> a
 
 </div>
 
+<nav class="coursenav">
+  <a class="cn-prev" href="claude-code-context.html"><span class="cn-k" data-i="cn.prevK"></span><span class="cn-n" data-i="cn.prev"></span></a>
+  <a class="cn-all" href="index.html" data-i="cn.all"></a>
+  <span></span>
+</nav>
 <footer class="site" data-i="footer"></footer>
 
 <script>
     const I={
         ru:{
             "brand":"Уровень 3 → 4",
+ "cn.all":"Все курсы","cn.prevK":"← Предыдущий курс","cn.prev":"Контекст проекта",
             "nav.next":"Дальше →","nav.back":"← Назад","nav.top":"↺ В начало",
             "hero.eyebrow":"Курс · автономная автоматизация",
             "hero.h1":"Перестать <em>вести диалог</em>.<br>Начать <em>ставить цель</em>.",
@@ -524,6 +543,7 @@ claude <span class="k">--print</span> <span class="k">--permission-mode</span> a
         },
         en:{
             "brand":"Level 3 → 4",
+ "cn.all":"All courses","cn.prevK":"← Previous course","cn.prev":"Project context",
             "nav.next":"Next →","nav.back":"← Back","nav.top":"↺ To start",
             "hero.eyebrow":"Course · autonomous automation",
             "hero.h1":"Stop <em>running the conversation</em>.<br>Start <em>setting the goal</em>.",
