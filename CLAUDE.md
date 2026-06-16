@@ -1,0 +1,36 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## What this is
+
+A set of standalone, single-file HTML "learning decks" that teach how to work with Claude Code. Each `.html` file is a complete, self-contained interactive presentation (inline CSS + JS, no dependencies, no build step). They are published via GitHub Pages — the file served as the site root must be named `index.html` (see commit `Rename to index.html for GitHub Pages`).
+
+Current files:
+- `index.html` — course chooser / landing page. The GitHub Pages root; links out to the two decks. Same design system and i18n pattern as the decks but no module navigation (it's a single static page).
+- `claude-code-context.html` — "Project Context in Claude Code" (CLAUDE.md, @-imports, rules/, settings, agents, skills, MCP). 9 modules (0–8).
+- `auto-mode.html` — "Level 3 → 4 · Autonomous automation with Claude". (Was previously `index.html` before the chooser took that name.)
+
+There is no package manager, bundler, test runner, or lint config. To preview, open the file directly in a browser or serve the directory statically (e.g. `python3 -m http.server`).
+
+## Architecture (shared by every deck)
+
+Each file follows the same pattern, so changes to one usually apply to the other:
+
+1. **Inline design system** in a single `<style>` block. Shared tokens live in `:root` (`--ink`, `--paper`, `--rust`, `--moss`, `--gold`, `--line`). Fonts: Fraunces (headings), Newsreader (body), Spline Sans Mono (labels/code), loaded from Google Fonts. Keep new decks consistent with this palette and these fonts.
+
+2. **Module-based navigation.** Content is split into `.module` blocks tagged `data-mod="N"`. Only one is visible at a time (`.module.active`). `go(i)` switches modules, toggles the active nav button, and scrolls to top. The top nav is rebuilt from the `navTitles` object by `buildNav()`.
+
+3. **Bilingual content via i18n, not hardcoded text.** This is the most important convention. Visible text is NOT written inline in the HTML — elements carry a `data-i="<key>"` attribute and are filled at runtime. All strings live in a single JS object `const I = { ru: {...}, en: {...} }`. `setLang(l)` walks every `[data-i]` element and sets `el.innerHTML = I[l][key]`.
+   - **Editing content = editing the `I` object**, not the HTML body. Adding/removing a `data-i` element requires adding/removing the matching key in **both** `ru` and `en`.
+   - Values may contain HTML (`<strong>`, `<code>`, etc.) since they're assigned via `innerHTML`.
+   - `navTitles` (and any other JS-built UI like quiz questions) also has per-language arrays/keys — keep these in sync with module count.
+   - Default language is set by the `setLang('en')` call at the very end of the script.
+
+4. **Interactive widgets** are plain JS reading the same `I[lang]` dictionary. E.g. `claude-code-context.html` has an offline "repo-context builder" — a weighted checklist (`checked`/`weights`, `buildQuestions()`, `toggleQ()`, `runEvaluate()`) that scores readiness and pulls verdict/`miss.*`/`have.*` strings from `I`.
+
+## Working conventions
+
+- **Keep `ru` and `en` key sets identical.** A key present in one language and missing in the other shows blank in that language. When adding content, add the `data-i` element plus both translations together.
+- When renaming the published entry point, the file must end up named `index.html` for GitHub Pages to serve it.
+- Edits are content-only inside existing single-file decks; there is nothing to compile or test beyond opening the page and checking both EN and RU render and every module navigates.

@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Context in Claude Code</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Spline+Sans+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1a1410;--paper:#f4ede1;--paper-2:#ebe0cf;--rust:#b4421f;--rust-dk:#8a3216;
+  --moss:#4a5d3a;--gold:#c08a2d;--line:#cdbfa6;--shadow:rgba(40,25,10,.18);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--paper);color:var(--ink);font-family:'Newsreader',Georgia,serif;
+  font-size:18px;line-height:1.65;-webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(192,138,45,.07), transparent 40%),
+    radial-gradient(circle at 88% 78%, rgba(74,93,58,.07), transparent 42%);
+}
+.wrap{max-width:880px;margin:0 auto;padding:0 24px}
+header.top{position:sticky;top:0;z-index:50;background:rgba(244,237,225,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top-inner{max-width:880px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{font-family:'Fraunces',serif;font-weight:600;font-size:1.05rem;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+.brand .dot{width:11px;height:11px;border-radius:50%;background:var(--rust);box-shadow:0 0 0 4px rgba(180,66,31,.18)}
+.top-right{display:flex;align-items:center;gap:14px}
+nav.modnav{display:flex;gap:4px;flex-wrap:wrap}
+nav.modnav button{font-family:'Spline Sans Mono',monospace;font-size:.72rem;background:none;border:1px solid transparent;border-radius:6px;color:var(--ink);opacity:.55;cursor:pointer;padding:5px 9px;transition:all .18s}
+nav.modnav button:hover{opacity:1;background:var(--paper-2)}
+nav.modnav button.active{opacity:1;background:var(--rust);color:var(--paper);font-weight:600}
+.langtog{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;flex-shrink:0}
+.langtog button{font-family:'Spline Sans Mono',monospace;font-size:.72rem;font-weight:600;background:var(--paper);border:none;color:var(--ink);opacity:.5;cursor:pointer;padding:6px 11px;transition:all .16s}
+.langtog button.active{background:var(--ink);color:var(--paper);opacity:1}
+.hero{padding:78px 0 54px;position:relative}
+.hero .eyebrow{font-family:'Spline Sans Mono',monospace;font-size:.78rem;text-transform:uppercase;letter-spacing:.22em;color:var(--rust);margin-bottom:22px}
+.hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(2.6rem,7vw,4.4rem);line-height:.98;letter-spacing:-.025em;margin-bottom:24px}
+.hero h1 em{font-style:italic;color:var(--rust)}
+.hero .lede{font-size:1.3rem;max-width:42ch;color:#4a3d30}
+.levels-strip{display:flex;gap:0;margin-top:46px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--paper-2)}
+.levels-strip .lv{flex:1;padding:18px 14px;text-align:center;border-right:1px solid var(--line);position:relative}
+.levels-strip .lv:last-child{border-right:none}
+.levels-strip .lv .n{font-family:'Spline Sans Mono',monospace;font-size:.7rem;opacity:.5}
+.levels-strip .lv .t{font-family:'Fraunces',serif;font-weight:600;font-size:.95rem;margin-top:4px}
+.levels-strip .lv.you{background:var(--moss);color:var(--paper)}
+.levels-strip .lv.you .n{opacity:.8}
+.levels-strip .lv.goal{background:var(--rust);color:var(--paper)}
+.levels-strip .lv.goal .n{opacity:.85}
+.levels-strip .lv .tag{position:absolute;top:-1px;left:50%;transform:translate(-50%,-100%);font-family:'Spline Sans Mono',monospace;font-size:.58rem;background:var(--ink);color:var(--paper);padding:2px 7px;border-radius:4px;white-space:nowrap}
+.module{display:none;padding:40px 0 80px;animation:fade .4s ease}
+.module.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.mod-head{margin-bottom:34px;border-bottom:2px solid var(--ink);padding-bottom:22px}
+.mod-head .num{font-family:'Spline Sans Mono',monospace;font-size:.8rem;color:var(--rust);letter-spacing:.15em;text-transform:uppercase}
+.mod-head h2{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(1.9rem,4.5vw,2.8rem);line-height:1.05;letter-spacing:-.02em;margin-top:8px}
+.module p{margin:0 0 18px}
+.module h3{font-family:'Fraunces',serif;font-weight:600;font-size:1.4rem;margin:38px 0 14px;letter-spacing:-.01em}
+.module ul,.module ol{margin:0 0 18px;padding-left:1.3em}
+.module li{margin-bottom:8px}
+strong{font-weight:600}
+em.term{font-style:normal;font-family:'Spline Sans Mono',monospace;font-size:.86em;background:var(--paper-2);padding:1px 6px;border-radius:4px;color:var(--rust-dk)}
+.callout{border-left:3px solid var(--gold);background:var(--paper-2);padding:18px 22px;border-radius:0 10px 10px 0;margin:26px 0}
+.callout .lbl{font-family:'Spline Sans Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);margin-bottom:6px}
+.callout.warn{border-color:var(--rust)}
+.callout.warn .lbl{color:var(--rust)}
+.loop{display:flex;flex-wrap:wrap;gap:10px;margin:28px 0;justify-content:center}
+.loop .step{flex:1;min-width:130px;background:var(--paper-2);border:1px solid var(--line);border-radius:10px;padding:16px;text-align:center;position:relative}
+.loop .step .ico{font-size:1.5rem}
+.loop .step .nm{font-family:'Fraunces',serif;font-weight:600;font-size:1.05rem;margin-top:6px}
+.loop .step .ds{font-size:.86rem;opacity:.7;line-height:1.4;margin-top:3px}
+.loop .arrow{align-self:center;color:var(--rust);font-size:1.3rem;font-weight:700}
+.cmp{width:100%;border-collapse:collapse;margin:24px 0;font-size:.94rem}
+.cmp th,.cmp td{padding:13px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.cmp thead th{font-family:'Spline Sans Mono',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;background:var(--ink);color:var(--paper)}
+.cmp thead th:first-child{border-radius:8px 0 0 0}
+.cmp thead th:last-child{border-radius:0 8px 0 0}
+.cmp td:first-child{font-weight:600;font-family:'Fraunces',serif}
+.cmp tbody tr:hover{background:var(--paper-2)}
+.cmp td code{font-size:.8em}
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:26px 0}
+.ba .col{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.ba .col .h{padding:10px 16px;font-family:'Spline Sans Mono',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--paper)}
+.ba .col.before .h{background:#6b5d4a}
+.ba .col.after .h{background:var(--moss)}
+.ba .col .b{padding:16px;font-size:.92rem;line-height:1.55}
+code{font-family:'Spline Sans Mono',monospace;font-size:.82em;background:var(--ink);color:#f0d9a8;padding:2px 6px;border-radius:4px}
+pre{background:var(--ink);color:#e8dcc0;padding:18px 20px;border-radius:10px;overflow-x:auto;margin:22px 0;font-family:'Spline Sans Mono',monospace;font-size:.82rem;line-height:1.6}
+pre code{background:none;padding:0;color:inherit;font-size:1em}
+pre .c{color:#7d8a6a}
+pre .k{color:#d99a4e}
+pre .p{color:#9ec07c}
+.evalbox{background:var(--paper-2);border:1px solid var(--line);border-radius:14px;padding:26px;margin:26px 0}
+.evalbox label{font-family:'Spline Sans Mono',monospace;font-size:.74rem;text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:10px;opacity:.7}
+.evalbtn{margin-top:16px;background:var(--rust);color:var(--paper);border:none;font-family:'Spline Sans Mono',monospace;font-size:.82rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding:13px 26px;border-radius:9px;cursor:pointer;transition:all .18s}
+.evalbtn:hover{background:var(--rust-dk)}
+.eval-out{margin-top:24px;display:none}
+.eval-out.show{display:block;animation:fade .4s}
+.verdict{display:inline-block;font-family:'Spline Sans Mono',monospace;font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding:6px 14px;border-radius:6px;margin-bottom:16px}
+.verdict.ready{background:var(--moss);color:var(--paper)}
+.verdict.partial{background:var(--gold);color:var(--ink)}
+.verdict.notyet{background:var(--rust);color:var(--paper)}
+.eval-card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:22px;margin-bottom:14px}
+.eval-card h4{font-family:'Fraunces',serif;font-size:1.15rem;margin-bottom:8px}
+.eval-err{color:var(--rust-dk);font-size:.9rem;background:rgba(180,66,31,.08);padding:14px 16px;border-radius:8px;border:1px solid rgba(180,66,31,.25)}
+.qgrid{display:grid;gap:12px;margin-bottom:8px}
+.qrow{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;align-items:flex-start;gap:13px;cursor:pointer;transition:all .15s}
+.qrow:hover{border-color:var(--moss)}
+.qrow .box{width:24px;height:24px;border:2px solid var(--moss);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--paper);transition:all .15s;margin-top:1px;font-size:0}
+.qrow.on .box{background:var(--moss);font-size:14px}
+.qrow.on .box::after{content:'✓'}
+.qrow .qt{font-size:.95rem;line-height:1.45}
+.qrow .qt b{display:block;font-family:'Fraunces',serif;margin-bottom:2px}
+.qrow .qt b code{font-family:'Spline Sans Mono',monospace;font-size:.82em;background:var(--paper-2);color:var(--rust-dk);padding:1px 5px;border-radius:4px}
+.qrow .qt .wt{font-family:'Spline Sans Mono',monospace;font-size:.66rem;opacity:.5;text-transform:uppercase;letter-spacing:.08em}
+.eval-meter{height:10px;border-radius:6px;background:var(--paper);border:1px solid var(--line);overflow:hidden;margin:6px 0 18px}
+.eval-meter i{display:block;height:100%;width:0;transition:width .5s ease}
+.pager{display:flex;justify-content:space-between;gap:16px;margin-top:50px;padding-top:28px;border-top:1px solid var(--line)}
+.pager button{font-family:'Spline Sans Mono',monospace;font-size:.78rem;background:none;border:1px solid var(--line);border-radius:9px;padding:12px 20px;cursor:pointer;color:var(--ink);transition:all .18s;max-width:48%;text-align:left}
+.pager button:hover:not(:disabled){background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.pager button:disabled{opacity:.3;cursor:default}
+.pager button .dir{display:block;font-size:.64rem;opacity:.6;text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px}
+.pager button.nxt{text-align:right}
+footer.site{padding:40px 0;text-align:center;font-family:'Spline Sans Mono',monospace;font-size:.72rem;opacity:.45;border-top:1px solid var(--line)}
+@media(max-width:680px){
+  body{font-size:17px}
+  .ba{grid-template-columns:1fr}
+  .top-inner{flex-wrap:wrap;justify-content:space-between}
+  .top-right{order:3;width:100%;flex-direction:column-reverse;align-items:stretch;gap:8px}
+  nav.modnav{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;gap:6px;padding-bottom:2px;scrollbar-width:thin}
+  nav.modnav button{flex:0 0 auto;white-space:nowrap}
+  .langtog{align-self:flex-end}
+  .levels-strip{flex-wrap:wrap}
+  .levels-strip .lv{min-width:33%;border-bottom:1px solid var(--line)}
+  .loop .arrow{transform:rotate(90deg)}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand"><span class="dot"></span><span data-i="brand"></span></div>
+    <div class="top-right">
+      <nav class="modnav" id="modnav"></nav>
+      <div class="langtog">
+        <button id="lang-ru" onclick="setLang('ru')">RU</button>
+        <button id="lang-en" onclick="setLang('en')">EN</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<section class="module active" data-mod="0">
+  <div class="hero">
+    <div class="eyebrow" data-i="hero.eyebrow"></div>
+    <h1 data-i="hero.h1"></h1>
+    <p class="lede" data-i="hero.lede"></p>
+  </div>
+  <p data-i="m0.p1"></p>
+  <p data-i="m0.p2"></p>
+  <div class="callout"><div class="lbl" data-i="m0.idea.l"></div><span data-i="m0.idea.b"></span></div>
+  <div class="callout warn"><div class="lbl" data-i="m0.manifesto.l"></div><span data-i="m0.manifesto.b"></span></div>
+  <h3 data-i="m0.toc.h"></h3>
+  <ol>
+    <li data-i="m0.toc.1"></li><li data-i="m0.toc.2"></li><li data-i="m0.toc.3"></li>
+    <li data-i="m0.toc.4"></li><li data-i="m0.toc.5"></li><li data-i="m0.toc.6"></li>
+    <li data-i="m0.toc.7"></li><li data-i="m0.toc.8"></li>
+  </ol>
+  <div class="pager">
+    <button disabled><span class="dir">←</span>—</button>
+    <button class="nxt" onclick="go(1)"><span class="dir" data-i="nav.next"></span><span data-i="p0.next"></span></button>
+  </div>
+</section>
+
+<section class="module" data-mod="1">
+  <div class="mod-head"><div class="num" data-i="m1.num"></div><h2 data-i="m1.h"></h2></div>
+  <p data-i="m1.p1"></p>
+  <table class="cmp">
+    <thead><tr><th></th><th data-i="m1.t.c1"></th><th data-i="m1.t.c2"></th></tr></thead>
+    <tbody>
+      <tr><td data-i="m1.t.r1"></td><td data-i="m1.t.r1a"></td><td data-i="m1.t.r1b"></td></tr>
+      <tr><td data-i="m1.t.r2"></td><td data-i="m1.t.r2a"></td><td data-i="m1.t.r2b"></td></tr>
+      <tr><td data-i="m1.t.r3"></td><td data-i="m1.t.r3a"></td><td data-i="m1.t.r3b"></td></tr>
+      <tr><td data-i="m1.t.r4"></td><td data-i="m1.t.r4a"></td><td data-i="m1.t.r4b"></td></tr>
+    </tbody>
+  </table>
+  <p data-i="m1.p2"></p>
+  <div class="callout"><div class="lbl" data-i="m1.shift.l"></div><span data-i="m1.shift.b"></span></div>
+  <div class="pager">
+    <button onclick="go(0)"><span class="dir" data-i="nav.back"></span><span data-i="p1.prev"></span></button>
+    <button class="nxt" onclick="go(2)"><span class="dir" data-i="nav.next"></span><span data-i="p1.next"></span></button>
+  </div>
+</section>
+
+<section class="module" data-mod="2">
+  <div class="mod-head"><div class="num" data-i="m2.num"></div><h2 data-i="m2.h"></h2></div>
+  <p data-i="m2.p1"></p>
+  <h3 data-i="m2.tree.h"></h3>
+  <pre><span class="c" data-i="m2.tree.c0"></span>
+your-repo/
+├── <span class="k">CLAUDE.md</span>            <span class="c" data-i="m2.tree.1"></span>
+└── .claude/
+    ├── <span class="k">settings.json</span>    <span class="c" data-i="m2.tree.2"></span>
+    ├── settings.local.json  <span class="c" data-i="m2.tree.3"></span>
+    ├── <span class="k">rules/</span>           <span class="c" data-i="m2.tree.4"></span>
+    ├── <span class="k">skills/</span>          <span class="c" data-i="m2.tree.5"></span>
+    ├── <span class="k">agents/</span>          <span class="c" data-i="m2.tree.6"></span>
+    └── <span class="k">.mcp.json</span>        <span class="c" data-i="m2.tree.7"></span>
+
+~/.claude/
+└── <span class="k">CLAUDE.md</span>            <span class="c" data-i="m2.tree.8"></span></pre>
+  <p data-i="m2.p2"></p>
+  <div class="callout"><div class="lbl" data-i="m2.note.l"></div><span data-i="m2.note.b"></span></div>
+  <div class="pager">
+    <button onclick="go(1)"><span class="dir" data-i="nav.back"></span><span data-i="p2.prev"></span></button>
+    <button class="nxt" onclick="go(3)"><span class="dir" data-i="nav.next"></span><span data-i="p2.next"></span></button>
+  </div>
+</section>
+
+<section class="module" data-mod="3">
+  <div class="mod-head"><div class="num" data-i="m3.num"></div><h2 data-i="m3.h"></h2></div>
+  <p data-i="m3.p1"></p>
+  <h3 data-i="m3.init.h"></h3>
+  <p data-i="m3.init.p"></p>
+  <pre><span class="k">/init</span>     <span class="c" data-i="m3.init.c1"></span>
+<span class="k">/memory</span>   <span class="c" data-i="m3.init.c2"></span></pre>
+  <h3 data-i="m3.s1.h"></h3>
+  <p data-i="m3.s1.p"></p>
+  <div class="ba">
+    <div class="col before"><div class="h" data-i="m3.ba.bl"></div><div class="b" data-i="m3.ba.bb"></div></div>
+    <div class="col after"><div class="h" data-i="m3.ba.al"></div><div class="b" data-i="m3.ba.ab"></div></div>
+  </div>
+  <h3 data-i="m3.tmpl.h"></h3>
+  <p data-i="m3.tmpl.p"></p>
+  <pre><span class="c"># CLAUDE.md</span>
+
+<span class="c">## <span data-i="m3.tmpl.s1"></span></span>
+<span data-i="m3.tmpl.l1"></span>
+
+<span class="c">## <span data-i="m3.tmpl.s2"></span></span>
+<span data-i="m3.tmpl.l2"></span>
+
+<span class="c">## <span data-i="m3.tmpl.s3"></span></span>
+<span data-i="m3.tmpl.l3"></span>
+
+<span class="c">## <span data-i="m3.tmpl.s4"></span></span>
+<span data-i="m3.tmpl.l4"></span></pre>
+  <div class="callout"><div class="lbl" data-i="m3.ai.l"></div><span data-i="m3.ai.b"></span></div>
+  <div class="callout warn"><div class="lbl" data-i="m3.warn.l"></div><span data-i="m3.warn.b"></span></div>
+  <div class="pager">
+    <button onclick="go(2)"><span class="dir" data-i="nav.back"></span><span data-i="p3.prev"></span></button>
+    <button class="nxt" onclick="go(4)"><span class="dir" data-i="nav.next"></span><span data-i="p3.next"></span></button>
+  </div>
+</section>
+
+<section class="module" data-mod="4">
+  <div class="mod-head"><div class="num" data-i="m4.num"></div><h2 data-i="m4.h"></h2></div>
+  <p data-i="m4.p1"></p>
+
+  <h3 data-i="m4.imp.h"></h3>
+  <p data-i="m4.imp.p"></p>
+  <pre><span class="c"># CLAUDE.md</span>
+<span class="c"><span data-i="m4.imp.cc"></span></span>
+@README.md
+@docs/architecture.md
+@.claude/rules/testing.md</pre>
+  <p data-i="m4.imp.p2"></p>
+
+  <h3 data-i="m4.rules.h"></h3>
+  <p data-i="m4.rules.p"></p>
+  <pre><span class="c">.claude/rules/</span>
+├── api.md        <span class="c" data-i="m4.rules.1"></span>
+└── testing.md    <span class="c" data-i="m4.rules.2"></span></pre>
+
+  <h3 data-i="m4.set.h"></h3>
+  <p data-i="m4.set.p"></p>
+  <pre><span class="c">// .claude/settings.json</span>
+{
+  <span class="p">"permissions"</span>: {
+    <span class="p">"allow"</span>: [<span class="p">"Bash(npm test)"</span>, <span class="p">"Bash(git commit:*)"</span>]
+  },
+  <span class="p">"model"</span>: <span class="p">"claude-opus-4-8"</span>
+}</pre>
+
+  <h3 data-i="m4.more.h"></h3>
+  <ul>
+    <li><strong><code>.claude/agents/</code></strong> — <span data-i="m4.more.1"></span></li>
+    <li><strong><code>.claude/skills/</code></strong> — <span data-i="m4.more.2"></span></li>
+    <li><strong><code>.claude/.mcp.json</code></strong> — <span data-i="m4.more.3"></span></li>
+    <li><strong data-i="m4.more.4t"></strong> — <span data-i="m4.more.4"></span></li>
+  </ul>
+
+  <div class="callout"><div class="lbl" data-i="m4.ai.l"></div><span data-i="m4.ai.b"></span></div>
+  <div class="callout warn"><div class="lbl" data-i="m4.warn.l"></div><span data-i="m4.warn.b"></span></div>
+  <div class="pager">
+    <button onclick="go(3)"><span class="dir" data-i="nav.back"></span><span data-i="p4.prev"></span></button>
+    <button class="nxt" onclick="go(5)"><span class="dir" data-i="nav.next"></span><span data-i="p4.next"></span></button>
+  </div>
+</section>
+
+<section class="module" data-mod="5">
+  <div class="mod-head"><div class="num" data-i="m5.num"></div><h2 data-i="m5.h"></h2></div>
+  <p data-i="m5.p1"></p>
+
+  <h3 data-i="m5.diff.h"></h3>
+  <p data-i="m5.diff.p"></p>
+  <table class="cmp">
+    <thead><tr><th></th><th data-i="m5.t.c1"></th><th data-i="m5.t.c2"></th></tr></thead>
+    <tbody>
+      <tr><td data-i="m5.t.r1"></td><td data-i="m5.t.r1a"></td><td data-i="m5.t.r1b"></td></tr>
+      <tr><td data-i="m5.t.r2"></td><td data-i="m5.t.r2a"></td><td data-i="m5.t.r2b"></td></tr>
+      <tr><td data-i="m5.t.r3"></td><td data-i="m5.t.r3a"></td><td data-i="m5.t.r3b"></td></tr>
+      <tr><td data-i="m5.t.r4"></td><td data-i="m5.t.r4a"></td><td data-i="m5.t.r4b"></td></tr>
+    </tbody>
+  </table>
+  <div class="callout"><div class="lbl" data-i="m5.combo.l"></div><span data-i="m5.combo.b"></span></div>
+
+  <h3 data-i="m5.ag.h"></h3>
+  <p data-i="m5.ag.p"></p>
+  <pre><span class="c"># .claude/agents/code-reviewer.md</span>
+<span class="k">---</span>
+<span class="p">name:</span> code-reviewer
+<span class="p">description:</span> <span data-i="m5.ag.desc"></span>
+<span class="p">tools:</span> Read, Grep, Glob   <span class="c" data-i="m5.ag.toolsc"></span>
+<span class="p">model:</span> haiku            <span class="c" data-i="m5.ag.modelc"></span>
+<span class="k">---</span>
+
+<span data-i="m5.ag.body1"></span>
+
+<span data-i="m5.ag.body2"></span>
+1. <span data-i="m5.ag.b1"></span>
+2. <span data-i="m5.ag.b2"></span>
+3. <span data-i="m5.ag.b3"></span>
+
+<span data-i="m5.ag.body3"></span></pre>
+  <ul>
+    <li><strong>name, description</strong> — <span data-i="m5.ag.f1"></span></li>
+    <li><strong>tools</strong> — <span data-i="m5.ag.f2"></span></li>
+    <li><strong>model</strong> — <span data-i="m5.ag.f3"></span></li>
+    <li><strong data-i="m5.ag.f4t"></strong> — <span data-i="m5.ag.f4"></span></li>
+  </ul>
+  <div class="callout warn"><div class="lbl" data-i="m5.ag.warn.l"></div><span data-i="m5.ag.warn.b"></span></div>
+
+  <h3 data-i="m5.sk.h"></h3>
+  <p data-i="m5.sk.p"></p>
+  <pre><span class="c"># .claude/skills/release-notes/SKILL.md</span>
+<span class="k">---</span>
+<span class="p">name:</span> release-notes
+<span class="p">description:</span> <span data-i="m5.sk.desc"></span>
+<span class="p">context:</span> fork       <span class="c" data-i="m5.sk.forkc"></span>
+<span class="p">model:</span> haiku
+<span class="p">effort:</span> low        <span class="c" data-i="m5.sk.effortc"></span>
+<span class="k">---</span>
+
+<span class="c">## <span data-i="m5.sk.s1"></span></span>
+<span data-i="m5.sk.l1"></span>
+
+<span class="c">## <span data-i="m5.sk.s2"></span></span>
+1. <span data-i="m5.sk.b1"></span>
+2. <span data-i="m5.sk.b2"></span>
+3. <span data-i="m5.sk.b3"></span>
+
+<span class="c">## <span data-i="m5.sk.s3"></span></span>
+<span data-i="m5.sk.l3"></span></pre>
+  <ul>
+    <li><strong>description</strong> — <span data-i="m5.sk.f1"></span></li>
+    <li><strong>context: fork</strong> — <span data-i="m5.sk.f2"></span></li>
+    <li><strong>model, effort</strong> — <span data-i="m5.sk.f3"></span></li>
+    <li><strong data-i="m5.sk.f4t"></strong> — <span data-i="m5.sk.f4"></span></li>
+  </ul>
+  <p data-i="m5.sk.invoke"></p>
+
+  <h3 data-i="m5.combine.h"></h3>
+  <p data-i="m5.combine.p"></p>
+  <div class="callout warn"><div class="lbl" data-i="m5.ai.l"></div><span data-i="m5.ai.b"></span></div>
+  <div class="callout"><div class="lbl" data-i="m5.pick.l"></div><span data-i="m5.pick.b"></span></div>
+
+  <div class="pager">
+    <button onclick="go(4)"><span class="dir" data-i="nav.back"></span><span data-i="p5.prev"></span></button>
+    <button class="nxt" onclick="go(6)"><span class="dir" data-i="nav.next"></span><span data-i="p5.next"></span></button>
+  </div>
+</section>
+
+<section class="module" data-mod="6">
+  <div class="mod-head"><div class="num" data-i="m6.num"></div><h2 data-i="m6.h"></h2></div>
+  <p data-i="m6.p1"></p>
+  <div class="callout"><div class="lbl" data-i="m6.idea.l"></div><span data-i="m6.idea.b"></span></div>
+
+  <h3 data-i="m6.c1.h"></h3>
+  <p data-i="m6.c1.p"></p>
+  <pre><span class="c" data-i="m6.c1.cc"></span>
+<span class="p">&gt;</span> <span data-i="m6.c1.q1"></span>
+
+<span class="p">&gt;</span> <span data-i="m6.c1.q2"></span></pre>
+
+  <h3 data-i="m6.c2.h"></h3>
+  <p data-i="m6.c2.p"></p>
+  <pre><span class="p">&gt;</span> <span data-i="m6.c2.q1"></span>
+
+<span class="p">&gt;</span> <span data-i="m6.c2.q2"></span></pre>
+
+  <h3 data-i="m6.c3.h"></h3>
+  <p data-i="m6.c3.p"></p>
+  <pre><span class="p">&gt;</span> <span data-i="m6.c3.q1"></span>
+
+<span class="p">&gt;</span> <span data-i="m6.c3.q2"></span></pre>
+
+  <h3 data-i="m6.c4.h"></h3>
+  <p data-i="m6.c4.p"></p>
+  <pre><span class="p">&gt;</span> <span data-i="m6.c4.q1"></span>
+
+<span class="p">&gt;</span> <span data-i="m6.c4.q2"></span></pre>
+
+  <h3 data-i="m6.c5.h"></h3>
+  <p data-i="m6.c5.p"></p>
+  <pre><span class="p">&gt;</span> <span data-i="m6.c5.q1"></span>
+
+<span class="p">&gt;</span> <span data-i="m6.c5.q2"></span></pre>
+
+  <div class="callout warn"><div class="lbl" data-i="m6.warn.l"></div><span data-i="m6.warn.b"></span></div>
+  <div class="callout"><div class="lbl" data-i="m6.review.l"></div><span data-i="m6.review.b"></span></div>
+
+  <div class="pager">
+    <button onclick="go(5)"><span class="dir" data-i="nav.back"></span><span data-i="p6.prev"></span></button>
+    <button class="nxt" onclick="go(7)"><span class="dir" data-i="nav.next"></span><span data-i="p6.next"></span></button>
+  </div>
+</section>
+
+<section class="module" data-mod="7">
+  <div class="mod-head"><div class="num" data-i="m7.num"></div><h2 data-i="m7.h"></h2></div>
+  <p data-i="m7.p1"></p>
+  <h3 data-i="m7.s1.h"></h3>
+  <p data-i="m7.s1.p"></p>
+  <h3 data-i="m7.s2.h"></h3>
+  <p data-i="m7.s2.p"></p>
+  <h3 data-i="m7.s3.h"></h3>
+  <p data-i="m7.s3.p"></p>
+  <h3 data-i="m7.s4.h"></h3>
+  <p data-i="m7.s4.p"></p>
+  <div class="callout"><div class="lbl" data-i="m7.ai.l"></div><span data-i="m7.ai.b"></span></div>
+  <div class="callout"><div class="lbl" data-i="m7.sum.l"></div><strong data-i="m7.sum.b"></strong></div>
+  <div class="pager">
+    <button onclick="go(6)"><span class="dir" data-i="nav.back"></span><span data-i="p7.prev"></span></button>
+    <button class="nxt" onclick="go(8)"><span class="dir" data-i="nav.next"></span><span data-i="p7.next"></span></button>
+  </div>
+</section>
+
+<section class="module" data-mod="8">
+  <div class="mod-head"><div class="num" data-i="m8.num"></div><h2 data-i="m8.h"></h2></div>
+  <p data-i="m8.p1"></p>
+  <div class="evalbox">
+    <label data-i="m8.label"></label>
+    <div class="qgrid" id="qgrid"></div>
+    <button class="evalbtn" id="evalBtn" onclick="runEvaluate()" data-i="m8.btn"></button>
+    <div class="eval-out" id="evalOut"></div>
+  </div>
+  <div class="callout"><div class="lbl" data-i="m8.how.l"></div><span data-i="m8.how.b"></span></div>
+  <div class="pager">
+    <button onclick="go(7)"><span class="dir" data-i="nav.back"></span><span data-i="p8.prev"></span></button>
+    <button class="nxt" onclick="go(0)"><span class="dir" data-i="nav.top"></span><span data-i="p8.next"></span></button>
+  </div>
+</section>
+
+</div>
+
+<footer class="site" data-i="footer"></footer>
+
+<script>
+const I={
+ru:{
+ "brand":"Контекст проекта · Claude Code",
+ "nav.next":"Дальше →","nav.back":"← Назад","nav.top":"↺ В начало",
+ "hero.eyebrow":"Курс · постоянный контекст в Claude Code",
+ "hero.h1":"Перестать <em>объяснять репозиторий</em>.<br>Начать <em>хранить контекст в нём</em>.",
+ "hero.lede":"Как настроить репозиторий так, чтобы Claude Code в каждой сессии стартовал уже зная ваш проект — через CLAUDE.md и сопутствующие файлы.",
+ "m0.p1":"В claude.ai контекст живёт в «проекте» с инструкциями и материалами. В Claude Code такого UI нет — у него <strong>нет памяти между сессиями</strong>. Каждый запуск начинается с чистого листа, если вы не оставили контекст прямо в репозитории.",
+ "m0.p2":"Эквивалент «проекта с контекстом» здесь — это <strong>файлы в репозитории</strong>, которые Claude Code читает при старте: прежде всего <em class=\"term\">CLAUDE.md</em>, а вокруг него — папка <em class=\"term\">.claude/</em> с настройками, правилами, под-агентами и интеграциями.",
+ "m0.idea.l":"Главная идея курса","m0.idea.b":"<strong>CLAUDE.md — это память проекта</strong>. Час, потраченный на хороший CLAUDE.md, экономит десятки часов повторных объяснений в каждой сессии.",
+ "m0.manifesto.l":"Кто это пишет и зачем","m0.manifesto.b":"Важный сдвиг: <strong>CLAUDE.md и всё в .claude/ — это файлы, которые AI пишет для AI</strong>. Их читает, им следует и их же правит Claude. Ваша роль — не редактор markdown, а <strong>источник идей и решений</strong>: что важно, каких правил держаться, куда не лезть. Вы говорите намерение словами — Claude превращает его в файлы и поддерживает их.",
+ "m0.toc.h":"Из чего состоит курс",
+ "m0.toc.1":"<strong>Что меняет CLAUDE.md</strong> — чем сессия с контекстом отличается от пустого старта.",
+ "m0.toc.2":"<strong>Карта файлов</strong> — CLAUDE.md и папка .claude/, кто за что отвечает.",
+ "m0.toc.3":"<strong>Пишем CLAUDE.md</strong> — /init, конкретика, шаблон из четырёх блоков.",
+ "m0.toc.4":"<strong>Сопутствующее</strong> — @-импорты, rules/, settings.json, agents, MCP, с примерами.",
+ "m0.toc.5":"<strong>Под-агенты и навыки</strong> — agents/ и skills/ подробно, с файлами.",
+ "m0.toc.6":"<strong>Промпты-команды</strong> — как словами поручить Claude создать и править эти файлы.",
+ "m0.toc.7":"<strong>Рабочий ритм</strong> — как поддерживать контекст и не раздувать его.",
+ "m0.toc.8":"<strong>Конструктор</strong> — отметьте, что уже настроено, и получите оценку готовности.",
+ "p0.next":"Модуль 1 · Что меняет CLAUDE.md",
+ "m1.num":"Модуль 01","m1.h":"Что меняет CLAUDE.md",
+ "m1.p1":"Разница между пустым стартом и репозиторием с контекстом — в том, <strong>что Claude Code знает в первую секунду сессии</strong>, ещё до вашего первого сообщения.",
+ "m1.t.c1":"Пустой репозиторий","m1.t.c2":"Репозиторий с CLAUDE.md",
+ "m1.t.r1":"Старт сессии","m1.t.r1a":"С чистого листа каждый раз","m1.t.r1b":"С контекстом проекта из файла",
+ "m1.t.r2":"Стиль и конвенции","m1.t.r2a":"Объясняете в каждой сессии","m1.t.r2b":"Заданы в CLAUDE.md один раз",
+ "m1.t.r3":"Команды сборки/тестов","m1.t.r3a":"Claude угадывает или спрашивает","m1.t.r3b":"Прописаны, известны сразу",
+ "m1.t.r4":"После /compact","m1.t.r4a":"Контекст разговора теряется","m1.t.r4b":"CLAUDE.md из корня перечитывается",
+ "m1.p2":"CLAUDE.md загружается автоматически в начале каждой сессии и применяется ко всему, что Claude делает с кодом. Важная деталь: корневой CLAUDE.md <strong>переживает /compact</strong> — после сжатия Claude перечитывает его с диска. Инструкции, оставшиеся только в разговоре, теряются.",
+ "m1.shift.l":"Сдвиг мышления","m1.shift.b":"В пустом репозитории вы <strong>заносите контекст руками</strong> в каждой сессии. С CLAUDE.md вы <strong>фиксируете контекст в файле</strong> — и он есть всегда, у вас и у всей команды через git.",
+ "p1.prev":"Введение","p1.next":"Модуль 2 · Карта файлов",
+ "m2.num":"Модуль 02","m2.h":"Карта файлов контекста",
+ "m2.p1":"Claude Code читает не один файл, а целую иерархию. Корневой CLAUDE.md — главный, вокруг него папка .claude/ с дополнительными настройками. Более конкретные инструкции имеют приоритет над общими.",
+ "m2.tree.h":"Что где лежит",
+ "m2.tree.c0":"# контекст уровня проекта (коммитится в git)",
+ "m2.tree.1":"← память проекта, главный файл","m2.tree.2":"← права, модель, хуки (общие)","m2.tree.3":"← личные настройки (в .gitignore)","m2.tree.4":"← правила по путям","m2.tree.5":"← переиспользуемые навыки","m2.tree.6":"← под-агенты под задачи","m2.tree.7":"← внешние интеграции (MCP)","m2.tree.8":"← ваши личные глобальные правила",
+ "m2.p2":"Приоритет — от частного к общему: личные настройки и проектный CLAUDE.md перекрывают глобальный ~/.claude/CLAUDE.md. То, что в .claude/rules/, подхватывается автоматически вместе с CLAUDE.md — импортировать вручную не нужно.",
+ "m2.note.l":"Командное против личного","m2.note.b":"Файлы в репозитории (CLAUDE.md, .claude/settings.json, rules/) коммитятся и достаются всей команде. settings.local.json лежит в .gitignore — это ваши личные настройки. Так общий контекст и личные предпочтения не мешают друг другу.",
+ "p2.prev":"Модуль 1","p2.next":"Модуль 3 · Пишем CLAUDE.md",
+ "m3.num":"Модуль 03","m3.h":"Пишем CLAUDE.md",
+ "m3.p1":"CLAUDE.md — самая мощная часть контекста: это то, что Claude «держит в голове» в каждой сессии. Хорошие инструкции конкретны и коротки.",
+ "m3.init.h":"Быстрый старт",
+ "m3.init.p":"Не пишите с нуля. Две команды дают каркас и доступ к памяти:",
+ "m3.init.c1":"← создаёт CLAUDE.md по шаблону","m3.init.c2":"← открыть/проверить, что загружено",
+ "m3.s1.h":"Конкретика вместо общих слов",
+ "m3.s1.p":"Расплывчатые правила игнорируются, конкретные — выполняются. Это главный фактор, работает CLAUDE.md или нет.",
+ "m3.ba.bl":"Слабо · общие слова","m3.ba.bb":"«Пиши чистый код и хорошо тестируй.»",
+ "m3.ba.al":"Сильно · конкретика","m3.ba.ab":"«Отступ 2 пробела. Перед коммитом запускай npm test. Файлы до 300 строк. Импорты только наверху.»",
+ "m3.tmpl.h":"Шаблон из четырёх блоков",
+ "m3.tmpl.p":"Удобная структура, которую заполняет /init и дальше правите вы:",
+ "m3.tmpl.s1":"Обзор проекта","m3.tmpl.l1":"Стек, архитектура, что это вообще за проект.",
+ "m3.tmpl.s2":"Команды","m3.tmpl.l2":"Сборка, тесты, линт, запуск — точные строки.",
+ "m3.tmpl.s3":"Стиль кода","m3.tmpl.l3":"Конвенции, отступы, правила импортов.",
+ "m3.tmpl.s4":"Чего избегать","m3.tmpl.l4":"Не трогать adjacent-код, не рефакторить лишнее.",
+ "m3.warn.l":"Держите файл коротким","m3.warn.b":"Файлы длиннее ~200 строк съедают контекст и хуже соблюдаются. Если CLAUDE.md разрастается — выносите детали в .claude/rules/ или подключайте через @-импорты (модуль 4).",
+ "m3.ai.l":"Не пишите руками — поручайте","m3.ai.b":"Этот файл не обязательно набирать самому. <strong>/init</strong> просит Claude проанализировать репозиторий и сгенерировать первый CLAUDE.md. Дальше вы не открываете редактор, а говорите словами: «добавь в CLAUDE.md, что перед коммитом всегда гоняем npm test». Идея — ваша, текст файла — за Claude.",
+ "p3.prev":"Модуль 2","p3.next":"Модуль 4 · Сопутствующее",
+ "m4.num":"Модуль 04","m4.h":"Сопутствующее: импорты, правила, настройки",
+ "m4.p1":"Вокруг CLAUDE.md есть набор инструментов, которые расширяют контекст, не раздувая главный файл. Разберём с примерами.",
+ "m4.imp.h":"@-импорты — ссылайтесь, не копируйте",
+ "m4.imp.p":"Вместо того чтобы дублировать README или архитектуру в CLAUDE.md, подключите их по ссылке через @path:",
+ "m4.imp.cc":"## Контекст (подтянуть из существующих файлов)",
+ "m4.imp.p2":"Импорт держит CLAUDE.md аккуратным и без дублирования. Но помните: импортируемые файлы загружаются при старте, так что на размер контекста это влияет так же, как если бы текст был внутри.",
+ "m4.rules.h":"rules/ — правила по путям",
+ "m4.rules.p":"Файлы в .claude/rules/ подхватываются автоматически вместе с CLAUDE.md и коммитятся в git — выгода всей команде. Удобно дробить инструкции по областям:",
+ "m4.rules.1":"← правила для кода API","m4.rules.2":"← правила для тестов",
+ "m4.set.h":"settings.json — права, модель, хуки",
+ "m4.set.p":"Настройки проекта: что Claude может делать без спроса, какая модель, какие хуки. Коммитится в git как часть командной конфигурации.",
+ "m4.more.h":"И ещё в .claude/",
+ "m4.more.1":"под-агенты под конкретные задачи (например, code-reviewer) с собственными инструкциями.",
+ "m4.more.2":"переиспользуемые навыки-воркфлоу, которые вызываются как /имя-навыка.",
+ "m4.more.3":"подключение внешних инструментов через MCP — GitHub, Notion и т.д.",
+ "m4.more.4t":"Auto memory","m4.more.4":"Claude сам сохраняет ваши поправки между сессиями; посмотреть и почистить — через /memory.",
+ "m4.warn.l":"Без секретов в коммит","m4.warn.b":"Ключи, токены и пароли не кладут в CLAUDE.md, rules/ или settings.json — всё это коммитится. Секреты держите в переменных окружения или в settings.local.json (он в .gitignore).",
+ "m4.ai.l":"Всё это создаёт Claude","m4.ai.b":"Правила, импорты, settings.json — их тоже не обязательно писать руками. Скажите: «вынеси правила по тестам в .claude/rules/testing.md» или «разреши в settings запускать npm test без подтверждения». Вы формулируете намерение — Claude создаёт и редактирует нужные файлы.",
+ "p4.prev":"Модуль 3","p4.next":"Модуль 5 · Агенты и навыки",
+ "m5.num":"Модуль 05","m5.h":"Под-агенты и навыки",
+ "m5.p1":"Две самые мощные вещи в .claude/ — под-агенты (agents/) и навыки (skills/). Обе расширяют то, что Claude умеет в вашем репозитории, но работают по-разному. Разберём подробно, с файлами.",
+ "m5.diff.h":"Агент или навык — в чём разница",
+ "m5.diff.p":"Главное различие — где исполняется работа и что происходит с контекстом:",
+ "m5.t.c1":"Под-агент (agents/)","m5.t.c2":"Навык (skills/)",
+ "m5.t.r1":"Контекст","m5.t.r1a":"Свой, изолированный","m5.t.r1b":"Основной разговор",
+ "m5.t.r2":"Что возвращает","m5.t.r2a":"Только итог/сводку","m5.t.r2b":"Работает прямо в диалоге",
+ "m5.t.r3":"Модель","m5.t.r3a":"Можно свою (haiku/opus)","m5.t.r3b":"Своя только при context: fork",
+ "m5.t.r4":"Когда брать","m5.t.r4a":"Делегировать спецзадачу в сторону","m5.t.r4b":"Повторяемая процедура по месту",
+ "m5.combo.l":"Простое правило","m5.combo.b":"Навык — когда нужно, чтобы Claude <strong>выполнил процедуру</strong> в текущем разговоре. Под-агент — когда нужно <strong>делегировать задачу спецу</strong>, который отработает отдельно и не засорит основной контекст (большой поиск по коду, ревью, шумный вывод).",
+ "m5.ag.h":"Под-агент: файл и поля",
+ "m5.ag.p":"Под-агент — это markdown-файл с YAML-frontmatter в .claude/agents/. Frontmatter объявляет, кто это и что ему можно; тело — системный промпт роли.",
+ "m5.ag.desc":"Use after writing code to review changes for bugs and style.",
+ "m5.ag.toolsc":"# только чтение — без правок",
+ "m5.ag.modelc":"# дешёвая модель для рутины",
+ "m5.ag.body1":"You are a code-review specialist. You review diffs, you do not modify code.",
+ "m5.ag.body2":"При вызове проверь по порядку:",
+ "m5.ag.b1":"уязвимости (инъекции, обход авторизации, утечки);",
+ "m5.ag.b2":"логические ошибки (off-by-one, null, гонки);",
+ "m5.ag.b3":"нарушения стиля по нашим конвенциям.",
+ "m5.ag.body3":"Верни список замечаний с приоритетами. Не меняй файлы.",
+ "m5.ag.f1":"обязательные поля. description — это триггер: по нему Claude решает, когда позвать агента. Пишите как условие: «Use when…».",
+ "m5.ag.f2":"какие инструменты доступны. Урезание инструментов не даёт агенту натворить лишнего.",
+ "m5.ag.f3":"можно задать свою модель: haiku для быстрых задач, opus для сложного разбора.",
+ "m5.ag.f4t":"Тело файла","m5.ag.f4":"всё, что ниже frontmatter, становится системным промптом агента: роль, шаги, границы.",
+ "m5.ag.warn.l":"Делайте агентов read-only","m5.ag.warn.b":"Рекомендуемый паттерн: давать под-агентам только чтение (Read, Grep, Glob — без Edit/Write/Bash), а правки оставлять родительской сессии, которая умеет спрашивать подтверждение. Если read-only агент вызовет правящий инструмент, вызов будет отклонён.",
+ "m5.sk.h":"Навык: файл и поля",
+ "m5.sk.p":"Навык — это папка в .claude/skills/<имя>/ с файлом SKILL.md: YAML-frontmatter (когда применять) плюс markdown-инструкции (как делать). Тело загружается только когда навык активируется.",
+ "m5.sk.desc":"Use when asked to draft release notes from recent commits.",
+ "m5.sk.forkc":"# запустить как изолированный под-агент",
+ "m5.sk.effortc":"# мало рассуждений — рутина",
+ "m5.sk.s1":"Когда применять","m5.sk.l1":"Просят собрать release notes из коммитов с прошлого тега.",
+ "m5.sk.s2":"Шаги","m5.sk.b1":"возьми коммиты с последнего тега (git log);","m5.sk.b2":"сгруппируй по типу: фичи, фиксы, прочее;","m5.sk.b3":"оформи как markdown-список под версию.",
+ "m5.sk.s3":"Чего не делать","m5.sk.l3":"Не выдумывай изменений, которых нет в коммитах.",
+ "m5.sk.f1":"самое важное поле. Начинайте с «Use when…» и пишите конкретно — по нему Claude понимает, когда навык нужен (и может вызвать его сам).",
+ "m5.sk.f2":"запускает навык как изолированный под-агент со своим контекстом — работа не засоряет основной разговор.",
+ "m5.sk.f3":"при fork можно задать модель и глубину рассуждений: low для рутины, high для сложного.",
+ "m5.sk.f4t":"Тело до ~500 строк","m5.sk.f4":"чёткие шаги, секции «когда» и «когда не надо», конкретные примеры. Длинное выносите в соседние файлы.",
+ "m5.sk.invoke":"Навык вызывается двумя путями: вручную как /release-notes или автоматически — Claude сам подхватит его, когда задача совпадёт с description.",
+ "m5.combine.h":"Самый мощный паттерн: агент + навык",
+ "m5.combine.p":"Под-агенты могут вызывать навыки. Например, агент-ревьюер (изолированный контекст, read-only) внутри себя запускает навык проверки по чек-листу. Так вы соединяете изоляцию контекста и переиспользуемую процедуру.",
+ "m5.pick.l":"Что выбрать","m5.pick.b":"Слэш-команда — если это просто «вставить шаблон промпта». <strong>Навык</strong> — если есть реальная логика, параметры или вспомогательные файлы. <strong>Под-агент</strong> — если работу нужно вынести в отдельный контекст со своими правами и, может, своей моделью.",
+ "m5.ai.l":"Агентов и навыки тоже создаёт Claude","m5.ai.b":"Не пишите эти файлы с нуля. Скажите «создай под-агента для ревью кода, только чтение» или «сделай навык для сборки release notes» — и Claude сгенерирует frontmatter и тело. Команда <strong>/agents</strong> создаёт под-агентов интерактивно; правки через неё применяются сразу, а ручное редактирование файла требует перезапуска сессии.",
+ "p5.prev":"Модуль 4","p5.next":"Модуль 6 · Промпты",
+ "m6.num":"Модуль 06","m6.h":"Промпты: как поручать правку контекста",
+ "m6.p1":"Раз CLAUDE.md и .claude/ пишет AI, ваш главный инструмент — не текстовый редактор, а удачно сформулированный промпт. Вот пять типовых ситуаций с примерами фраз, которыми вы поручаете Claude создать или изменить контекст.",
+ "m6.idea.l":"Принцип","m6.idea.b":"Вы приносите <strong>намерение</strong> («что должно быть так»), Claude превращает его в <strong>файлы</strong>. Не описывайте синтаксис frontmatter — описывайте поведение, которого хотите.",
+ "m6.c1.h":"1 · Создать контекст с нуля",
+ "m6.c1.p":"Самый первый шаг в новом репозитории — пусть Claude изучит код и напишет первый CLAUDE.md сам:",
+ "m6.c1.cc":"# в сессии Claude Code",
+ "m6.c1.q1":"/init",
+ "m6.c1.q2":"Изучи репозиторий и создай CLAUDE.md: стек, как собирать и тестировать, ключевые конвенции. Коротко, по делу.",
+ "m6.c2.h":"2 · Добавить правило",
+ "m6.c2.p":"Заметили повторяющуюся поправку — продиктуйте её одной фразой, не открывая файл:",
+ "m6.c2.q1":"Добавь в CLAUDE.md: перед каждым коммитом запускать npm test и npm run lint.",
+ "m6.c2.q2":"Запомни: в этом проекте мы не используем default-экспорты, только именованные.",
+ "m6.c3.h":"3 · Вынести детали в rules/",
+ "m6.c3.p":"Когда CLAUDE.md разрастается — поручите реорганизацию:",
+ "m6.c3.q1":"CLAUDE.md стал длинным. Вынеси правила по тестированию в .claude/rules/testing.md и сошлись на него.",
+ "m6.c3.q2":"Создай .claude/rules/api.md с нашими конвенциями для эндпоинтов: именование, формат ошибок, версионирование.",
+ "m6.c4.h":"4 · Создать под-агента или навык",
+ "m6.c4.p":"Опишите роль и границы словами — frontmatter Claude напишет сам:",
+ "m6.c4.q1":"Создай под-агента code-reviewer: только чтение (Read, Grep, Glob), модель haiku, ищет баги, уязвимости и нарушения стиля, файлы не меняет.",
+ "m6.c4.q2":"Сделай навык release-notes: собирает коммиты с последнего тега и оформляет changelog по версиям.",
+ "m6.c5.h":"5 · Поправить существующее",
+ "m6.c5.p":"Контекст — живой. Правки тоже идут через промпт:",
+ "m6.c5.q1":"Обнови CLAUDE.md: мы перешли с npm на pnpm, поправь все команды.",
+ "m6.c5.q2":"Дай code-reviewer ещё и доступ к Bash, чтобы он мог запускать линтер.",
+ "m6.warn.l":"Идея — ваша, текст — Claude","m6.warn.b":"Claude отлично пишет структуру и синтаксис, но <strong>не угадает ваши намерения и приоритеты</strong>. Что важно для проекта, какие правила незыблемы, чего категорически нельзя — это приносите вы. Без этого получится аккуратный, но бессодержательный файл.",
+ "m6.review.l":"Всегда просматривайте результат","m6.review.b":"Это файлы, которые управляют поведением Claude во всех будущих сессиях и коммитятся в git для всей команды. Прочитайте, что Claude написал, прежде чем коммитить — как ревью пул-реквеста.",
+ "p6.prev":"Модуль 5","p6.next":"Модуль 7 · Рабочий ритм",
+ "m7.num":"Модуль 07","m7.h":"Рабочий ритм контекста",
+ "m7.p1":"Контекст репозитория — не разовая настройка, а живые файлы. Несколько привычек держат их полезными.",
+ "m7.s1.h":"Шаг 1 · Правьте CLAUDE.md, а не себя",
+ "m7.s1.p":"Повторяете одну и ту же поправку в каждой сессии — поручите Claude занести её в CLAUDE.md раз и навсегда. Это и есть основной способ обучения контекста.",
+ "m7.s2.h":"Шаг 2 · Дайте auto memory работать",
+ "m7.s2.p":"Когда вы поправляете Claude («не используй моки в этих тестах»), он сам сохраняет это в авто-память и помнит в следующей сессии. CLAUDE.md — это «конституция», авто-память — «прецеденты».",
+ "m7.s3.h":"Шаг 3 · Держите файл коротким",
+ "m7.s3.p":"Раз в какое-то время просите Claude пройтись по CLAUDE.md: убрать устаревшее, вынести детали в rules/. Длинный файл хуже соблюдается.",
+ "m7.s4.h":"Шаг 4 · Проверяйте, что загружено",
+ "m7.s4.p":"Если CLAUDE.md будто не работает — запустите /memory и убедитесь, что файл в списке. Чаще всего причина — он не в том месте по иерархии либо правила слишком расплывчаты.",
+ "m7.ai.l":"Поддержка — это диалог, не редактура","m7.ai.b":"Ритм — это не «сесть и переписать файлы», а вовремя сказать Claude словами, что изменить. Вы замечаете, что нужно поправить; Claude вносит правку и поддерживает файлы в форме. Идея — за человеком, исполнение — за AI.",
+ "m7.sum.l":"Суть в одной строке","m7.sum.b":"CLAUDE.md в корень → конкретные правила → детали в rules/ и @-импорты → секреты мимо git → правьте файл словами, а не повторяйтесь.",
+ "p7.prev":"Модуль 6","p7.next":"Модуль 8 · Конструктор",
+ "m8.num":"Модуль 08","m8.h":"Конструктор · оцените свой репозиторий",
+ "m8.p1":"Отметьте, что уже настроено в репозитории. Конструктор посчитает готовность контекста и подскажет, что добавить в первую очередь.",
+ "m8.label":"Отметьте то, что уже есть",
+ "m8.btn":"Показать готовность",
+ "m8.how.l":"Как это работает","m8.how.b":"Конструктор работает полностью в браузере, без интернета — его можно открыть откуда угодно. Логика повторяет принципы курса.",
+ "m8.q1t":"Есть <code>CLAUDE.md</code> в корне","m8.q1d":"Главный файл памяти проекта существует и коммитится.","m8.q1w":"вес ×2",
+ "m8.q2t":"Прописаны команды","m8.q2d":"Сборка, тесты, линт указаны точными строками.",
+ "m8.q3t":"Задан стиль кода","m8.q3d":"Конвенции конкретны (отступы, импорты, размер файлов).",
+ "m8.q4t":"Файл короткий","m8.q4d":"CLAUDE.md примерно до 200 строк, без воды.",
+ "m8.q5t":"Есть <code>.claude/rules/</code>","m8.q5d":"Детальные правила вынесены по областям/путям.",
+ "m8.q6t":"Настроен <code>settings.json</code>","m8.q6d":"Заданы права и модель для проекта.",
+ "m8.q7t":"Секреты вне git","m8.q7d":"В коммитимых файлах нет ключей и токенов.","m8.q7w":"вес ×2",
+ "m8.needAny":"Отметьте хотя бы один пункт, чтобы увидеть оценку.",
+ "eval.fit":"Готовность контекста","eval.next":"Что добавить в первую очередь","eval.have":"Что уже хорошо",
+ "v.ready":"Контекст собран","v.partial":"Неплохая основа","v.notyet":"Только начало",
+ "v.ready.fit":"Репозиторий настроен по делу: память, команды и правила на месте, секреты вне git. Дальше — поддерживать CLAUDE.md в тонусе и дать auto memory учиться.",
+ "v.partial.fit":"Основа есть, но контекст раскрыт не полностью. Закройте отмеченные ниже пробелы — и сессии станут заметно стабильнее.",
+ "v.notyet.fit":"Контекста почти нет. Начните с CLAUDE.md в корне: команды и стиль кода дают самый быстрый эффект.",
+ "miss.q1":"создайте CLAUDE.md в корне (/init)","miss.q2":"пропишите команды сборки и тестов","miss.q3":"задайте конкретный стиль кода","miss.q4":"сократите CLAUDE.md, вынесите детали в rules/","miss.q5":"вынесите правила по путям в .claude/rules/","miss.q6":"настройте .claude/settings.json (права, модель)","miss.q7":"уберите секреты из коммитимых файлов",
+ "have.q1":"CLAUDE.md в корне","have.q2":"команды прописаны","have.q3":"стиль кода задан","have.q4":"файл короткий","have.q5":"есть rules/","have.q6":"settings.json настроен","have.q7":"секреты вне git",
+ "miss.none":"Все ключевые элементы на месте.","miss.prefix":"Добавьте: ","have.prefix":"Уже есть: ","have.none":"Пока ничего не отмечено.",
+ "p8.prev":"Модуль 7","p8.next":"Введение",
+ "footer":"Интерактивный курс · постоянный контекст проекта в Claude Code"
+},
+en:{
+ "brand":"Project context · Claude Code",
+ "nav.next":"Next →","nav.back":"← Back","nav.top":"↺ To start",
+ "hero.eyebrow":"Course · persistent context in Claude Code",
+ "hero.h1":"Stop <em>explaining the repo</em>.<br>Start <em>storing context in it</em>.",
+ "hero.lede":"How to set up a repository so Claude Code starts every session already knowing your project — via CLAUDE.md and the files around it.",
+ "m0.p1":"In claude.ai, context lives in a «project» with instructions and materials. Claude Code has no such UI — it has <strong>no memory between sessions</strong>. Every launch starts from a blank slate unless you've left the context right in the repository.",
+ "m0.p2":"The equivalent of a «project with context» here is <strong>files in the repository</strong> that Claude Code reads on start: first and foremost <em class=\"term\">CLAUDE.md</em>, and around it the <em class=\"term\">.claude/</em> folder with settings, rules, sub-agents and integrations.",
+ "m0.idea.l":"The core idea","m0.idea.b":"<strong>CLAUDE.md is the project's memory</strong>. An hour spent on a solid CLAUDE.md saves countless hours of repeated explanations every session.",
+ "m0.manifesto.l":"Who writes this, and why","m0.manifesto.b":"A key shift: <strong>CLAUDE.md and everything in .claude/ are files written by AI for AI</strong>. Claude reads them, follows them, and edits them. Your role isn't markdown editor but <strong>the source of ideas and decisions</strong>: what matters, which rules to keep, where not to go. You voice the intent — Claude turns it into files and maintains them.",
+ "m0.toc.h":"What the course covers",
+ "m0.toc.1":"<strong>What CLAUDE.md changes</strong> — how a session with context differs from a blank start.",
+ "m0.toc.2":"<strong>The file map</strong> — CLAUDE.md and the .claude/ folder, what each is for.",
+ "m0.toc.3":"<strong>Writing CLAUDE.md</strong> — /init, concreteness, a four-block template.",
+ "m0.toc.4":"<strong>The surrounding files</strong> — @-imports, rules/, settings.json, agents, MCP, with examples.",
+ "m0.toc.5":"<strong>Sub-agents and skills</strong> — agents/ and skills/ in detail, with the files.",
+ "m0.toc.6":"<strong>Prompts as commands</strong> — how to have Claude create and edit these files in words.",
+ "m0.toc.7":"<strong>A working rhythm</strong> — how to maintain context without bloating it.",
+ "m0.toc.8":"<strong>Builder</strong> — check what you've set up and get a readiness score.",
+ "p0.next":"Module 1 · What CLAUDE.md changes",
+ "m1.num":"Module 01","m1.h":"What CLAUDE.md changes",
+ "m1.p1":"The difference between a blank start and a repo with context is <strong>what Claude Code knows in the first second of a session</strong>, before your first message.",
+ "m1.t.c1":"Blank repository","m1.t.c2":"Repository with CLAUDE.md",
+ "m1.t.r1":"Session start","m1.t.r1a":"From a blank slate every time","m1.t.r1b":"With project context from the file",
+ "m1.t.r2":"Style and conventions","m1.t.r2a":"You explain them each session","m1.t.r2b":"Set in CLAUDE.md once",
+ "m1.t.r3":"Build/test commands","m1.t.r3a":"Claude guesses or asks","m1.t.r3b":"Spelled out, known immediately",
+ "m1.t.r4":"After /compact","m1.t.r4a":"Conversation context is lost","m1.t.r4b":"Root CLAUDE.md is re-read",
+ "m1.p2":"CLAUDE.md loads automatically at the start of every session and applies to everything Claude does with the code. A key detail: the root CLAUDE.md <strong>survives /compact</strong> — after compaction Claude re-reads it from disk. Instructions left only in the conversation are lost.",
+ "m1.shift.l":"The mindset shift","m1.shift.b":"In a blank repo you <strong>load the context by hand</strong> every session. With CLAUDE.md you <strong>fix the context in a file</strong> — and it's always there, for you and the whole team via git.",
+ "p1.prev":"Intro","p1.next":"Module 2 · The file map",
+ "m2.num":"Module 02","m2.h":"The context file map",
+ "m2.p1":"Claude Code reads not one file but a whole hierarchy. The root CLAUDE.md is the main one, with the .claude/ folder around it for extra settings. More specific instructions take precedence over broader ones.",
+ "m2.tree.h":"What lives where",
+ "m2.tree.c0":"# project-level context (committed to git)",
+ "m2.tree.1":"← project memory, the main file","m2.tree.2":"← permissions, model, hooks (shared)","m2.tree.3":"← personal settings (gitignored)","m2.tree.4":"← path-scoped rules","m2.tree.5":"← reusable skills","m2.tree.6":"← task-focused sub-agents","m2.tree.7":"← external integrations (MCP)","m2.tree.8":"← your personal global rules",
+ "m2.p2":"Priority runs from specific to broad: personal settings and the project CLAUDE.md override the global ~/.claude/CLAUDE.md. Anything in .claude/rules/ is picked up automatically alongside CLAUDE.md — no manual import needed.",
+ "m2.note.l":"Team vs personal","m2.note.b":"Files in the repo (CLAUDE.md, .claude/settings.json, rules/) are committed and reach the whole team. settings.local.json is gitignored — your personal settings. That way shared context and personal preferences don't collide.",
+ "p2.prev":"Module 1","p2.next":"Module 3 · Writing CLAUDE.md",
+ "m3.num":"Module 03","m3.h":"Writing CLAUDE.md",
+ "m3.p1":"CLAUDE.md is the most powerful part of the context: it's what Claude «holds in mind» every session. Good instructions are concrete and short.",
+ "m3.init.h":"Quick start",
+ "m3.init.p":"Don't write from scratch. Two commands give you a frame and access to memory:",
+ "m3.init.c1":"← creates CLAUDE.md from a template","m3.init.c2":"← open / check what's loaded",
+ "m3.s1.h":"Concrete over generic",
+ "m3.s1.p":"Vague rules get ignored, concrete ones get followed. This is the single biggest factor in whether CLAUDE.md works.",
+ "m3.ba.bl":"Weak · generic","m3.ba.bb":"«Write clean code and test well.»",
+ "m3.ba.al":"Strong · concrete","m3.ba.ab":"«2-space indentation. Run npm test before committing. Files under 300 lines. Imports at the top only.»",
+ "m3.tmpl.h":"A four-block template",
+ "m3.tmpl.p":"A handy structure that /init fills and you refine:",
+ "m3.tmpl.s1":"Project overview","m3.tmpl.l1":"Stack, architecture, what this project even is.",
+ "m3.tmpl.s2":"Commands","m3.tmpl.l2":"Build, test, lint, run — exact strings.",
+ "m3.tmpl.s3":"Code style","m3.tmpl.l3":"Conventions, indentation, import rules.",
+ "m3.tmpl.s4":"What to avoid","m3.tmpl.l4":"Don't touch adjacent code, don't over-refactor.",
+ "m3.warn.l":"Keep the file short","m3.warn.b":"Files over ~200 lines eat context and are followed less reliably. If CLAUDE.md grows — move details into .claude/rules/ or pull them in via @-imports (module 4).",
+ "m3.ai.l":"Don't type it — delegate it","m3.ai.b":"You don't have to type this file yourself. <strong>/init</strong> asks Claude to analyze the repo and generate the first CLAUDE.md. After that you don't open an editor — you say it in words: «add to CLAUDE.md that we always run npm test before committing». The idea is yours, the file text is Claude's.",
+ "p3.prev":"Module 2","p3.next":"Module 4 · The surrounding files",
+ "m4.num":"Module 04","m4.h":"Around it: imports, rules, settings",
+ "m4.p1":"A set of tools surrounds CLAUDE.md, extending the context without bloating the main file. Let's go through them with examples.",
+ "m4.imp.h":"@-imports — reference, don't copy",
+ "m4.imp.p":"Instead of duplicating the README or architecture into CLAUDE.md, pull them in by reference with @path:",
+ "m4.imp.cc":"## Context (pulled from existing files)",
+ "m4.imp.p2":"Imports keep CLAUDE.md tidy and free of duplication. But note: imported files load at launch, so they affect context size the same as if the text were inline.",
+ "m4.rules.h":"rules/ — path-scoped rules",
+ "m4.rules.p":"Files in .claude/rules/ are picked up automatically alongside CLAUDE.md and committed to git — the whole team benefits. Handy for splitting instructions by area:",
+ "m4.rules.1":"← rules for API code","m4.rules.2":"← rules for tests",
+ "m4.set.h":"settings.json — permissions, model, hooks",
+ "m4.set.p":"Project settings: what Claude may do without asking, which model, which hooks. Committed to git as part of the team configuration.",
+ "m4.more.h":"And more in .claude/",
+ "m4.more.1":"task-focused sub-agents (e.g. code-reviewer) with their own instructions.",
+ "m4.more.2":"reusable workflow skills invoked as /skill-name.",
+ "m4.more.3":"external tool integrations via MCP — GitHub, Notion, and so on.",
+ "m4.more.4t":"Auto memory","m4.more.4":"Claude saves your corrections between sessions itself; view and prune them via /memory.",
+ "m4.warn.l":"No secrets in commits","m4.warn.b":"Keys, tokens and passwords don't go in CLAUDE.md, rules/ or settings.json — all of these are committed. Keep secrets in environment variables or settings.local.json (which is gitignored).",
+ "m4.ai.l":"Claude builds all of this too","m4.ai.b":"Rules, imports, settings.json — none of these need to be hand-written either. Say «move the testing rules into .claude/rules/testing.md» or «allow npm test without a prompt in settings». You state the intent — Claude creates and edits the files.",
+ "p4.prev":"Module 3","p4.next":"Module 5 · Agents & skills",
+ "m5.num":"Module 05","m5.h":"Sub-agents and skills",
+ "m5.p1":"The two most powerful things in .claude/ are sub-agents (agents/) and skills (skills/). Both extend what Claude can do in your repository, but they work differently. Let's go through them in detail, with the files.",
+ "m5.diff.h":"Agent or skill — the difference",
+ "m5.diff.p":"The key distinction is where the work runs and what happens to the context:",
+ "m5.t.c1":"Sub-agent (agents/)","m5.t.c2":"Skill (skills/)",
+ "m5.t.r1":"Context","m5.t.r1a":"Its own, isolated","m5.t.r1b":"The main conversation",
+ "m5.t.r2":"What it returns","m5.t.r2a":"Only a result/summary","m5.t.r2b":"Runs right in the dialogue",
+ "m5.t.r3":"Model","m5.t.r3a":"Can be its own (haiku/opus)","m5.t.r3b":"Own only with context: fork",
+ "m5.t.r4":"When to reach for it","m5.t.r4a":"Delegate a side task away","m5.t.r4b":"A repeatable procedure in place",
+ "m5.combo.l":"A simple rule","m5.combo.b":"A skill — when you want Claude to <strong>follow a procedure</strong> in the current conversation. A sub-agent — when you want to <strong>delegate a task to a specialist</strong> that runs separately and doesn't pollute the main context (large code search, review, noisy output).",
+ "m5.ag.h":"Sub-agent: the file and fields",
+ "m5.ag.p":"A sub-agent is a markdown file with YAML frontmatter in .claude/agents/. The frontmatter declares who it is and what it may use; the body is the role's system prompt.",
+ "m5.ag.desc":"Use after writing code to review changes for bugs and style.",
+ "m5.ag.toolsc":"# read-only — no edits",
+ "m5.ag.modelc":"# cheap model for routine",
+ "m5.ag.body1":"You are a code-review specialist. You review diffs, you do not modify code.",
+ "m5.ag.body2":"On invocation, check in order:",
+ "m5.ag.b1":"vulnerabilities (injection, auth bypass, leaks);",
+ "m5.ag.b2":"logic errors (off-by-one, null, races);",
+ "m5.ag.b3":"style violations against our conventions.",
+ "m5.ag.body3":"Return a prioritized list of findings. Do not modify files.",
+ "m5.ag.f1":"required fields. description is the trigger: Claude uses it to decide when to spawn the agent. Write it as a condition: «Use when…».",
+ "m5.ag.f2":"which tools are available. Restricting tools keeps the agent from taking unintended actions.",
+ "m5.ag.f3":"you can set its own model: haiku for fast tasks, opus for complex reasoning.",
+ "m5.ag.f4t":"The file body","m5.ag.f4":"everything below the frontmatter becomes the agent's system prompt: role, steps, boundaries.",
+ "m5.ag.warn.l":"Keep agents read-only","m5.ag.warn.b":"The recommended pattern: give sub-agents read-only tools (Read, Grep, Glob — no Edit/Write/Bash) and leave edits to the parent session that can handle approval prompts. If a read-only agent calls an editing tool, the call is denied.",
+ "m5.sk.h":"Skill: the file and fields",
+ "m5.sk.p":"A skill is a folder at .claude/skills/<name>/ with a SKILL.md file: YAML frontmatter (when to use it) plus markdown instructions (how). The body loads only when the skill activates.",
+ "m5.sk.desc":"Use when asked to draft release notes from recent commits.",
+ "m5.sk.forkc":"# run as an isolated sub-agent",
+ "m5.sk.effortc":"# minimal reasoning — routine",
+ "m5.sk.s1":"When to use","m5.sk.l1":"Asked to assemble release notes from commits since the last tag.",
+ "m5.sk.s2":"Steps","m5.sk.b1":"take commits since the last tag (git log);","m5.sk.b2":"group by type: features, fixes, other;","m5.sk.b3":"format as a markdown list under the version.",
+ "m5.sk.s3":"What not to do","m5.sk.l3":"Don't invent changes that aren't in the commits.",
+ "m5.sk.f1":"the most important field. Start with «Use when…» and be specific — Claude reads it to know when the skill is needed (and may invoke it itself).",
+ "m5.sk.f2":"runs the skill as an isolated sub-agent with its own context — the work doesn't pollute the main conversation.",
+ "m5.sk.f3":"with fork you can set the model and reasoning depth: low for routine, high for complex.",
+ "m5.sk.f4t":"Body under ~500 lines","m5.sk.f4":"clear steps, «when» and «when not» sections, concrete examples. Move long-form content into adjacent files.",
+ "m5.sk.invoke":"A skill is invoked two ways: manually as /release-notes, or automatically — Claude picks it up when the task matches the description.",
+ "m5.combine.h":"The most powerful pattern: agent + skill",
+ "m5.combine.p":"Sub-agents can call skills. For example, a reviewer agent (isolated context, read-only) runs a checklist skill inside itself. That's how you combine context isolation with a reusable procedure.",
+ "m5.pick.l":"What to choose","m5.pick.b":"A slash command — if it's just «insert this prompt template». A <strong>skill</strong> — if there's real logic, parameters or helper files. A <strong>sub-agent</strong> — if the work should run in a separate context with its own permissions and maybe its own model.",
+ "m5.ai.l":"Agents and skills are Claude-built too","m5.ai.b":"Don't write these files from scratch. Say «create a code-review sub-agent, read-only» or «make a skill that assembles release notes» — Claude generates the frontmatter and body. The <strong>/agents</strong> command creates sub-agents interactively; edits through it take effect immediately, while editing the file by hand needs a session restart.",
+ "p5.prev":"Module 4","p5.next":"Module 6 · Prompts",
+ "m6.num":"Module 06","m6.h":"Prompts: how to delegate context edits",
+ "m6.p1":"Since CLAUDE.md and .claude/ are written by AI, your main tool isn't a text editor but a well-phrased prompt. Here are five common situations with example phrasings you use to have Claude create or change the context.",
+ "m6.idea.l":"The principle","m6.idea.b":"You bring the <strong>intent</strong> («this is how it should be»), Claude turns it into <strong>files</strong>. Don't describe frontmatter syntax — describe the behavior you want.",
+ "m6.c1.h":"1 · Create context from scratch",
+ "m6.c1.p":"The very first step in a new repo — let Claude study the code and write the first CLAUDE.md itself:",
+ "m6.c1.cc":"# inside a Claude Code session",
+ "m6.c1.q1":"/init",
+ "m6.c1.q2":"Study the repo and create a CLAUDE.md: stack, how to build and test, key conventions. Keep it short and to the point.",
+ "m6.c2.h":"2 · Add a rule",
+ "m6.c2.p":"Spotted a recurring correction — dictate it in one line without opening the file:",
+ "m6.c2.q1":"Add to CLAUDE.md: run npm test and npm run lint before every commit.",
+ "m6.c2.q2":"Remember: in this project we don't use default exports, only named ones.",
+ "m6.c3.h":"3 · Move details into rules/",
+ "m6.c3.p":"When CLAUDE.md grows — delegate the reorganization:",
+ "m6.c3.q1":"CLAUDE.md is getting long. Move the testing rules into .claude/rules/testing.md and reference it.",
+ "m6.c3.q2":"Create .claude/rules/api.md with our endpoint conventions: naming, error format, versioning.",
+ "m6.c4.h":"4 · Create a sub-agent or skill",
+ "m6.c4.p":"Describe the role and boundaries in words — Claude writes the frontmatter itself:",
+ "m6.c4.q1":"Create a code-reviewer sub-agent: read-only (Read, Grep, Glob), haiku model, looks for bugs, vulnerabilities and style violations, doesn't change files.",
+ "m6.c4.q2":"Make a release-notes skill: gathers commits since the last tag and formats a changelog by version.",
+ "m6.c5.h":"5 · Edit what exists",
+ "m6.c5.p":"Context is living. Edits also go through a prompt:",
+ "m6.c5.q1":"Update CLAUDE.md: we moved from npm to pnpm, fix all the commands.",
+ "m6.c5.q2":"Give code-reviewer Bash access too, so it can run the linter.",
+ "m6.warn.l":"The idea is yours, the text is Claude's","m6.warn.b":"Claude writes structure and syntax well, but <strong>won't guess your intent and priorities</strong>. What matters for the project, which rules are non-negotiable, what's strictly off-limits — that you bring. Without it you get a tidy but hollow file.",
+ "m6.review.l":"Always review the result","m6.review.b":"These are files that govern Claude's behavior in every future session and get committed to git for the whole team. Read what Claude wrote before committing — like reviewing a pull request.",
+ "p6.prev":"Module 5","p6.next":"Module 7 · A working rhythm",
+ "m7.num":"Module 07","m7.h":"A working rhythm",
+ "m7.p1":"Repository context isn't a one-off setup but living files. A few habits keep them useful.",
+ "m7.s1.h":"Step 1 · Fix CLAUDE.md, not yourself",
+ "m7.s1.p":"Repeating the same correction every session — have Claude write it into CLAUDE.md once and for all. That's the main way the context learns.",
+ "m7.s2.h":"Step 2 · Let auto memory work",
+ "m7.s2.p":"When you correct Claude («don't use mocks in these tests»), it saves that to auto memory itself and remembers next session. CLAUDE.md is the «constitution», auto memory is the «case law».",
+ "m7.s3.h":"Step 3 · Keep the file short",
+ "m7.s3.p":"Every so often ask Claude to go through CLAUDE.md: remove the outdated, move details into rules/. A long file is followed less reliably.",
+ "m7.s4.h":"Step 4 · Check what's loaded",
+ "m7.s4.p":"If CLAUDE.md seems not to work — run /memory and confirm the file is in the list. Usually it's either misplaced in the hierarchy or the rules are too vague.",
+ "m7.ai.l":"Maintenance is a dialogue, not editing","m7.ai.b":"The rhythm isn't «sit down and rewrite files» but telling Claude in words what to change, in time. You notice what needs fixing; Claude makes the edit and keeps the files in shape. The idea is the human's, the execution is the AI's.",
+ "m7.sum.l":"In one line","m7.sum.b":"CLAUDE.md at the root → concrete rules → details into rules/ and @-imports → secrets out of git → fix the file in words, don't repeat yourself.",
+ "p7.prev":"Module 6","p7.next":"Module 8 · Builder",
+ "m8.num":"Module 08","m8.h":"Builder · score your repository",
+ "m8.p1":"Check what's already set up in your repository. The builder scores the context readiness and tells you what to add first.",
+ "m8.label":"Check everything you already have",
+ "m8.btn":"Show readiness",
+ "m8.how.l":"How this works","m8.how.b":"The builder runs entirely in your browser, no internet — it works anywhere you host it. The logic mirrors the course principles.",
+ "m8.q1t":"<code>CLAUDE.md</code> at the root","m8.q1d":"The main project-memory file exists and is committed.","m8.q1w":"weight ×2",
+ "m8.q2t":"Commands spelled out","m8.q2d":"Build, test, lint given as exact strings.",
+ "m8.q3t":"Code style defined","m8.q3d":"Conventions are concrete (indentation, imports, file size).",
+ "m8.q4t":"File kept short","m8.q4d":"CLAUDE.md is around 200 lines or fewer, no fluff.",
+ "m8.q5t":"<code>.claude/rules/</code> in use","m8.q5d":"Detailed rules split out by area/path.",
+ "m8.q6t":"<code>settings.json</code> configured","m8.q6d":"Permissions and model set for the project.",
+ "m8.q7t":"Secrets out of git","m8.q7d":"Committed files hold no keys or tokens.","m8.q7w":"weight ×2",
+ "m8.needAny":"Check at least one item to see your score.",
+ "eval.fit":"Context readiness","eval.next":"What to add first","eval.have":"What's already good",
+ "v.ready":"Context is built","v.partial":"A solid base","v.notyet":"Just starting",
+ "v.ready.fit":"The repo is set up well: memory, commands and rules are in place, secrets out of git. From here — keep CLAUDE.md fresh and let auto memory learn.",
+ "v.partial.fit":"There's a base, but the context isn't fully realized. Close the gaps marked below and sessions get noticeably more stable.",
+ "v.notyet.fit":"There's almost no context. Start with CLAUDE.md at the root: commands and code style give the fastest payoff.",
+ "miss.q1":"create CLAUDE.md at the root (/init)","miss.q2":"spell out build and test commands","miss.q3":"define a concrete code style","miss.q4":"shorten CLAUDE.md, move details to rules/","miss.q5":"split path-scoped rules into .claude/rules/","miss.q6":"configure .claude/settings.json (permissions, model)","miss.q7":"remove secrets from committed files",
+ "have.q1":"CLAUDE.md at the root","have.q2":"commands spelled out","have.q3":"code style defined","have.q4":"file kept short","have.q5":"rules/ in use","have.q6":"settings.json configured","have.q7":"secrets out of git",
+ "miss.none":"All the key elements are in place.","miss.prefix":"Add: ","have.prefix":"Already there: ","have.none":"Nothing checked yet.",
+ "p8.prev":"Module 7","p8.next":"Intro",
+ "footer":"Interactive course · persistent project context in Claude Code"
+}
+};
+
+let lang='en', current=0;
+function setLang(l){
+  lang=l;
+  document.documentElement.lang=l;
+  document.getElementById('lang-ru').classList.toggle('active',l==='ru');
+  document.getElementById('lang-en').classList.toggle('active',l==='en');
+  const d=I[l];
+  document.querySelectorAll('[data-i]').forEach(el=>{const k=el.getAttribute('data-i');if(d[k]!==undefined)el.innerHTML=d[k];});
+  buildNav();
+  buildQuestions();
+}
+const navTitles={
+ ru:['Введение','1 · Зачем','2 · Карта','3 · CLAUDE.md','4 · Вокруг','5 · Агенты и навыки','6 · Промпты','7 · Ритм','8 · Конструктор'],
+ en:['Intro','1 · Why','2 · Map','3 · CLAUDE.md','4 · Around','5 · Agents & skills','6 · Prompts','7 · Rhythm','8 · Builder']
+};
+function buildNav(){
+  const nav=document.getElementById('modnav');nav.innerHTML='';
+  navTitles[lang].forEach((t,i)=>{
+    const b=document.createElement('button');b.textContent=t;b.onclick=()=>go(i);
+    if(i===current)b.classList.add('active');nav.appendChild(b);
+  });
+}
+function go(i){
+  current=i;
+  document.querySelectorAll('.module').forEach(m=>m.classList.toggle('active',+m.dataset.mod===i));
+  document.querySelectorAll('#modnav button').forEach((b,bi)=>b.classList.toggle('active',bi===i));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ── offline repo-context builder ── */
+const checked={q1:false,q2:false,q3:false,q4:false,q5:false,q6:false,q7:false};
+const weights={q1:2,q2:1,q3:1,q4:1,q5:1,q6:1,q7:2};
+function buildQuestions(){
+  const grid=document.getElementById('qgrid');if(!grid)return;
+  const d=I[lang];
+  const qs=['q1','q2','q3','q4','q5','q6','q7'];
+  grid.innerHTML=qs.map(q=>{
+    const w=d['m8.'+q+'w'];
+    return `<div class="qrow${checked[q]?' on':''}" data-q="${q}" onclick="toggleQ(this)"><div class="box"></div>`+
+      `<div class="qt"><b>${d['m8.'+q+'t']}</b>${d['m8.'+q+'d']}${w?` <span class="wt">${w}</span>`:''}</div></div>`;
+  }).join('');
+}
+function toggleQ(el){
+  const q=el.getAttribute('data-q');
+  checked[q]=!checked[q];
+  el.classList.toggle('on',checked[q]);
+}
+function runEvaluate(){
+  const out=document.getElementById('evalOut');
+  const d=I[lang];
+  const qs=['q1','q2','q3','q4','q5','q6','q7'];
+  if(!qs.some(q=>checked[q])){
+    out.className='eval-out show';out.innerHTML=`<div class="eval-err">${d['m8.needAny']}</div>`;return;
+  }
+  let total=0,got=0;
+  qs.forEach(q=>{total+=weights[q];if(checked[q])got+=weights[q];});
+  const pct=Math.round(got/total*100);
+  const verdict=pct>=80?'ready':pct>=45?'partial':'notyet';
+  const missing=qs.filter(q=>!checked[q]).map(q=>d['miss.'+q]);
+  const have=qs.filter(q=>checked[q]).map(q=>d['have.'+q]);
+  const missText=missing.length?d['miss.prefix']+missing.join('; ')+'.':d['miss.none'];
+  const haveText=have.length?d['have.prefix']+have.join('; ')+'.':d['have.none'];
+
+  let html=`<span class="verdict ${verdict}">${d['v.'+verdict]} · ${pct}%</span>`;
+  html+=`<div class="eval-meter"><i style="width:${pct}%;background:${verdict==='ready'?'var(--moss)':verdict==='partial'?'var(--gold)':'var(--rust)'}"></i></div>`;
+  html+=`<div class="eval-card"><h4>${d['eval.fit']}</h4><p>${d['v.'+verdict+'.fit']}</p></div>`;
+  html+=`<div class="eval-card"><h4>${d['eval.next']}</h4><p>${missText}</p></div>`;
+  html+=`<div class="eval-card"><h4>${d['eval.have']}</h4><p>${haveText}</p></div>`;
+  out.className='eval-out show';out.innerHTML=html;
+}
+setLang('en');
+</script>
+</body>
+</html>
