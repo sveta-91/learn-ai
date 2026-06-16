@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat · Cowork · Code · Claude</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Spline+Sans+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1a1410;--paper:#f4ede1;--paper-2:#ebe0cf;--rust:#b4421f;--rust-dk:#8a3216;
+  --moss:#4a5d3a;--gold:#c08a2d;--line:#cdbfa6;--shadow:rgba(40,25,10,.18);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--paper);color:var(--ink);font-family:'Newsreader',Georgia,serif;
+  font-size:18px;line-height:1.65;-webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(192,138,45,.07), transparent 40%),
+    radial-gradient(circle at 88% 78%, rgba(74,93,58,.07), transparent 42%);
+}
+.wrap{max-width:880px;margin:0 auto;padding:0 24px}
+header.top{position:sticky;top:0;z-index:50;background:rgba(244,237,225,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top-inner{max-width:880px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{font-family:'Fraunces',serif;font-weight:600;font-size:1.05rem;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+.brand .dot{width:11px;height:11px;border-radius:50%;background:var(--rust);box-shadow:0 0 0 4px rgba(180,66,31,.18)}
+.top-right{display:flex;align-items:center;gap:14px}
+nav.modnav{display:flex;gap:4px;flex-wrap:wrap}
+nav.modnav button{font-family:'Spline Sans Mono',monospace;font-size:.72rem;background:none;border:1px solid transparent;border-radius:6px;color:var(--ink);opacity:.55;cursor:pointer;padding:5px 9px;transition:all .18s}
+nav.modnav button:hover{opacity:1;background:var(--paper-2)}
+nav.modnav button.active{opacity:1;background:var(--rust);color:var(--paper);font-weight:600}
+.langtog{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;flex-shrink:0}
+.langtog button{font-family:'Spline Sans Mono',monospace;font-size:.72rem;font-weight:600;background:var(--paper);border:none;color:var(--ink);opacity:.5;cursor:pointer;padding:6px 11px;transition:all .16s}
+.langtog button.active{background:var(--ink);color:var(--paper);opacity:1}
+.hero{padding:78px 0 54px;position:relative}
+.hero .eyebrow{font-family:'Spline Sans Mono',monospace;font-size:.78rem;text-transform:uppercase;letter-spacing:.22em;color:var(--rust);margin-bottom:22px}
+.hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(2.6rem,7vw,4.4rem);line-height:.98;letter-spacing:-.025em;margin-bottom:24px}
+.hero h1 em{font-style:italic;color:var(--rust)}
+.hero .lede{font-size:1.3rem;max-width:42ch;color:#4a3d30}
+.levels-strip{display:flex;gap:0;margin-top:46px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--paper-2)}
+.levels-strip .lv{flex:1;padding:18px 14px;text-align:center;border-right:1px solid var(--line);position:relative}
+.levels-strip .lv:last-child{border-right:none}
+.levels-strip .lv .n{font-family:'Spline Sans Mono',monospace;font-size:.7rem;opacity:.5}
+.levels-strip .lv .t{font-family:'Fraunces',serif;font-weight:600;font-size:.95rem;margin-top:4px}
+.levels-strip .lv.you{background:var(--moss);color:var(--paper)}
+.levels-strip .lv.you .n{opacity:.8}
+.levels-strip .lv.goal{background:var(--rust);color:var(--paper)}
+.levels-strip .lv.goal .n{opacity:.85}
+.levels-strip .lv .tag{position:absolute;top:-1px;left:50%;transform:translate(-50%,-100%);font-family:'Spline Sans Mono',monospace;font-size:.58rem;background:var(--ink);color:var(--paper);padding:2px 7px;border-radius:4px;white-space:nowrap}
+.module{display:none;padding:40px 0 80px;animation:fade .4s ease}
+.module.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.mod-head{margin-bottom:34px;border-bottom:2px solid var(--ink);padding-bottom:22px}
+.mod-head .num{font-family:'Spline Sans Mono',monospace;font-size:.8rem;color:var(--rust);letter-spacing:.15em;text-transform:uppercase}
+.mod-head h2{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(1.9rem,4.5vw,2.8rem);line-height:1.05;letter-spacing:-.02em;margin-top:8px}
+.module p{margin:0 0 18px}
+.module h3{font-family:'Fraunces',serif;font-weight:600;font-size:1.4rem;margin:38px 0 14px;letter-spacing:-.01em}
+.module ul,.module ol{margin:0 0 18px;padding-left:1.3em}
+.module li{margin-bottom:8px}
+strong{font-weight:600}
+em.term{font-style:normal;font-family:'Spline Sans Mono',monospace;font-size:.86em;background:var(--paper-2);padding:1px 6px;border-radius:4px;color:var(--rust-dk)}
+.callout{border-left:3px solid var(--gold);background:var(--paper-2);padding:18px 22px;border-radius:0 10px 10px 0;margin:26px 0}
+.callout .lbl{font-family:'Spline Sans Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);margin-bottom:6px}
+.callout.warn{border-color:var(--rust)}
+.callout.warn .lbl{color:var(--rust)}
+.loop{display:flex;flex-wrap:wrap;gap:10px;margin:28px 0;justify-content:center}
+.loop .step{flex:1;min-width:130px;background:var(--paper-2);border:1px solid var(--line);border-radius:10px;padding:16px;text-align:center;position:relative}
+.loop .step .ico{font-size:1.5rem}
+.loop .step .nm{font-family:'Fraunces',serif;font-weight:600;font-size:1.05rem;margin-top:6px}
+.loop .step .ds{font-size:.86rem;opacity:.7;line-height:1.4;margin-top:3px}
+.loop .arrow{align-self:center;color:var(--rust);font-size:1.3rem;font-weight:700}
+.cmp{width:100%;border-collapse:collapse;margin:24px 0;font-size:.94rem}
+.cmp th,.cmp td{padding:13px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.cmp thead th{font-family:'Spline Sans Mono',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;background:var(--ink);color:var(--paper)}
+.cmp thead th:first-child{border-radius:8px 0 0 0}
+.cmp thead th:last-child{border-radius:0 8px 0 0}
+.cmp td:first-child{font-weight:600;font-family:'Fraunces',serif}
+.cmp tbody tr:hover{background:var(--paper-2)}
+.cmp td code{font-size:.8em}
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:26px 0}
+.ba .col{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.ba .col .h{padding:10px 16px;font-family:'Spline Sans Mono',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--paper)}
+.ba .col.before .h{background:#6b5d4a}
+.ba .col.after .h{background:var(--moss)}
+.ba .col .b{padding:16px;font-size:.92rem;line-height:1.55}
+code{font-family:'Spline Sans Mono',monospace;font-size:.82em;background:var(--ink);color:#f0d9a8;padding:2px 6px;border-radius:4px}
+pre{background:var(--ink);color:#e8dcc0;padding:18px 20px;border-radius:10px;overflow-x:auto;margin:22px 0;font-family:'Spline Sans Mono',monospace;font-size:.82rem;line-height:1.6}
+pre code{background:none;padding:0;color:inherit;font-size:1em}
+pre .c{color:#7d8a6a}
+pre .k{color:#d99a4e}
+pre .p{color:#9ec07c}
+.evalbox{background:var(--paper-2);border:1px solid var(--line);border-radius:14px;padding:26px;margin:26px 0}
+.evalbox label{font-family:'Spline Sans Mono',monospace;font-size:.74rem;text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:10px;opacity:.7}
+.evalbtn{margin-top:16px;background:var(--rust);color:var(--paper);border:none;font-family:'Spline Sans Mono',monospace;font-size:.82rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding:13px 26px;border-radius:9px;cursor:pointer;transition:all .18s}
+.evalbtn:hover{background:var(--rust-dk)}
+.eval-out{margin-top:24px;display:none}
+.eval-out.show{display:block;animation:fade .4s}
+.verdict{display:inline-block;font-family:'Spline Sans Mono',monospace;font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding:6px 14px;border-radius:6px;margin-bottom:16px}
+.verdict.ready{background:var(--moss);color:var(--paper)}
+.verdict.partial{background:var(--gold);color:var(--ink)}
+.verdict.notyet{background:var(--rust);color:var(--paper)}
+.eval-card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:22px;margin-bottom:14px}
+.eval-card h4{font-family:'Fraunces',serif;font-size:1.15rem;margin-bottom:8px}
+.eval-err{color:var(--rust-dk);font-size:.9rem;background:rgba(180,66,31,.08);padding:14px 16px;border-radius:8px;border:1px solid rgba(180,66,31,.25)}
+.qgrid{display:grid;gap:12px;margin-bottom:8px}
+.qrow{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;align-items:flex-start;gap:13px;cursor:pointer;transition:all .15s}
+.qrow:hover{border-color:var(--moss)}
+.qrow .box{width:24px;height:24px;border:2px solid var(--moss);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--paper);transition:all .15s;margin-top:1px;font-size:0}
+.qrow.on .box{background:var(--moss);font-size:14px}
+.qrow.on .box::after{content:'✓'}
+.qrow .qt{font-size:.95rem;line-height:1.45}
+.qrow .qt b{display:block;font-family:'Fraunces',serif;margin-bottom:2px}
+.qrow .qt b code{font-family:'Spline Sans Mono',monospace;font-size:.82em;background:var(--paper-2);color:var(--rust-dk);padding:1px 5px;border-radius:4px}
+.qrow .qt .wt{font-family:'Spline Sans Mono',monospace;font-size:.66rem;opacity:.5;text-transform:uppercase;letter-spacing:.08em}
+.eval-meter{height:10px;border-radius:6px;background:var(--paper);border:1px solid var(--line);overflow:hidden;margin:6px 0 18px}
+.eval-meter i{display:block;height:100%;width:0;transition:width .5s ease}
+.pager{display:flex;justify-content:space-between;gap:16px;margin-top:50px;padding-top:28px;border-top:1px solid var(--line)}
+.pager button{font-family:'Spline Sans Mono',monospace;font-size:.78rem;background:none;border:1px solid var(--line);border-radius:9px;padding:12px 20px;cursor:pointer;color:var(--ink);transition:all .18s;max-width:48%;text-align:left}
+.pager button:hover:not(:disabled){background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.pager button:disabled{opacity:.3;cursor:default}
+.pager button .dir{display:block;font-size:.64rem;opacity:.6;text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px}
+.pager button.nxt{text-align:right}
+footer.site{padding:40px 0;text-align:center;font-family:'Spline Sans Mono',monospace;font-size:.72rem;opacity:.45;border-top:1px solid var(--line)}
+@media(max-width:680px){
+  body{font-size:17px}
+  .ba{grid-template-columns:1fr}
+  .top-inner{flex-wrap:wrap;justify-content:space-between}
+  .top-right{order:3;width:100%;flex-direction:column-reverse;align-items:stretch;gap:8px}
+  nav.modnav{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;gap:6px;padding-bottom:2px;scrollbar-width:thin}
+  nav.modnav button{flex:0 0 auto;white-space:nowrap}
+  .langtog{align-self:flex-end}
+  .levels-strip{flex-wrap:wrap}
+  .levels-strip .lv{min-width:33%;border-bottom:1px solid var(--line)}
+  .loop .arrow{transform:rotate(90deg)}
+}
+</style>
+</head>
+
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand"><span class="dot"></span><span data-i="brand"></span></div>
+    <div class="top-right">
+      <nav class="modnav" id="modnav"></nav>
+      <div class="langtog">
+        <button id="lang-ru" onclick="setLang('ru')">RU</button>
+        <button id="lang-en" onclick="setLang('en')">EN</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- ── 0 · INTRO ── -->
+<section class="module active" data-mod="0">
+  <div class="hero">
+    <div class="eyebrow" data-i="hero.eyebrow"></div>
+    <h1 data-i="hero.h1"></h1>
+    <p class="lede" data-i="hero.lede"></p>
+  </div>
+  <p data-i="m0.p1"></p>
+  <p data-i="m0.p2"></p>
+  <div class="callout"><div class="lbl" data-i="m0.idea.l"></div><span data-i="m0.idea.b"></span></div>
+  <div class="callout"><div class="lbl" data-i="m0.note.l"></div><span data-i="m0.note.b"></span></div>
+  <h3 data-i="m0.toc.h"></h3>
+  <ol>
+    <li data-i="m0.toc.1"></li><li data-i="m0.toc.2"></li><li data-i="m0.toc.3"></li>
+    <li data-i="m0.toc.4"></li><li data-i="m0.toc.5"></li><li data-i="m0.toc.6"></li>
+  </ol>
+  <div class="pager">
+    <button disabled><span class="dir">←</span>—</button>
+    <button class="nxt" onclick="go(1)"><span class="dir" data-i="nav.next"></span><span data-i="p0.next"></span></button>
+  </div>
+</section>
+
+<!-- ── 1 · THREE MODES ── -->
+<section class="module" data-mod="1">
+  <div class="mod-head"><div class="num" data-i="m1.num"></div><h2 data-i="m1.h"></h2></div>
+  <p data-i="m1.p1"></p>
+  <table class="cmp">
+    <thead><tr><th></th><th data-i="m1.t.c1"></th><th data-i="m1.t.c2"></th><th data-i="m1.t.c3"></th></tr></thead>
+    <tbody>
+      <tr><td data-i="m1.t.r1"></td><td data-i="m1.t.r1a"></td><td data-i="m1.t.r1b"></td><td data-i="m1.t.r1c"></td></tr>
+      <tr><td data-i="m1.t.r2"></td><td data-i="m1.t.r2a"></td><td data-i="m1.t.r2b"></td><td data-i="m1.t.r2c"></td></tr>
+      <tr><td data-i="m1.t.r3"></td><td data-i="m1.t.r3a"></td><td data-i="m1.t.r3b"></td><td data-i="m1.t.r3c"></td></tr>
+      <tr><td data-i="m1.t.r4"></td><td data-i="m1.t.r4a"></td><td data-i="m1.t.r4b"></td><td data-i="m1.t.r4c"></td></tr>
+      <tr><td data-i="m1.t.r5"></td><td data-i="m1.t.r5a"></td><td data-i="m1.t.r5b"></td><td data-i="m1.t.r5c"></td></tr>
+    </tbody>
+  </table>
+  <p data-i="m1.p2"></p>
+  <div class="callout"><div class="lbl" data-i="m1.tip.l"></div><span data-i="m1.tip.b"></span></div>
+  <div class="pager">
+    <button onclick="go(0)"><span class="dir" data-i="nav.back"></span><span data-i="p1.prev"></span></button>
+    <button class="nxt" onclick="go(2)"><span class="dir" data-i="nav.next"></span><span data-i="p1.next"></span></button>
+  </div>
+</section>
+
+<!-- ── 2 · COWORK UP CLOSE ── -->
+<section class="module" data-mod="2">
+  <div class="mod-head"><div class="num" data-i="m2.num"></div><h2 data-i="m2.h"></h2></div>
+  <p data-i="m2.p1"></p>
+  <div class="loop">
+    <div class="step"><div class="ico">➕</div><div class="nm" data-i="m2.f1t"></div><div class="ds" data-i="m2.f1d"></div></div>
+    <div class="step"><div class="ico">📁</div><div class="nm" data-i="m2.f2t"></div><div class="ds" data-i="m2.f2d"></div></div>
+    <div class="step"><div class="ico">⏰</div><div class="nm" data-i="m2.f3t"></div><div class="ds" data-i="m2.f3d"></div></div>
+    <div class="step"><div class="ico">🪄</div><div class="nm" data-i="m2.f4t"></div><div class="ds" data-i="m2.f4d"></div></div>
+    <div class="step"><div class="ico">🛰️</div><div class="nm" data-i="m2.f5t"></div><div class="ds" data-i="m2.f5d"></div></div>
+    <div class="step"><div class="ico">⚙️</div><div class="nm" data-i="m2.f6t"></div><div class="ds" data-i="m2.f6d"></div></div>
+  </div>
+  <p data-i="m2.p2"></p>
+  <div class="callout"><div class="lbl" data-i="m2.ex.l"></div><span data-i="m2.ex.b"></span></div>
+  <div class="pager">
+    <button onclick="go(1)"><span class="dir" data-i="nav.back"></span><span data-i="p2.prev"></span></button>
+    <button class="nxt" onclick="go(3)"><span class="dir" data-i="nav.next"></span><span data-i="p2.next"></span></button>
+  </div>
+</section>
+
+<!-- ── 3 · SURFACES & SCOPE ── -->
+<section class="module" data-mod="3">
+  <div class="mod-head"><div class="num" data-i="m3.num"></div><h2 data-i="m3.h"></h2></div>
+  <p data-i="m3.p1"></p>
+  <table class="cmp">
+    <thead><tr><th></th><th data-i="m3.t.c1"></th><th data-i="m3.t.c2"></th><th data-i="m3.t.c3"></th><th data-i="m3.t.c4"></th></tr></thead>
+    <tbody>
+      <tr><td data-i="m3.t.r1"></td><td data-i="m3.t.r1a"></td><td data-i="m3.t.r1b"></td><td data-i="m3.t.r1c"></td><td data-i="m3.t.r1d"></td></tr>
+      <tr><td data-i="m3.t.r2"></td><td data-i="m3.t.r2a"></td><td data-i="m3.t.r2b"></td><td data-i="m3.t.r2c"></td><td data-i="m3.t.r2d"></td></tr>
+      <tr><td data-i="m3.t.r3"></td><td data-i="m3.t.r3a"></td><td data-i="m3.t.r3b"></td><td data-i="m3.t.r3c"></td><td data-i="m3.t.r3d"></td></tr>
+      <tr><td data-i="m3.t.r4"></td><td data-i="m3.t.r4a"></td><td data-i="m3.t.r4b"></td><td data-i="m3.t.r4c"></td><td data-i="m3.t.r4d"></td></tr>
+      <tr><td data-i="m3.t.r5"></td><td data-i="m3.t.r5a"></td><td data-i="m3.t.r5b"></td><td data-i="m3.t.r5c"></td><td data-i="m3.t.r5d"></td></tr>
+    </tbody>
+  </table>
+  <p data-i="m3.p2"></p>
+  <pre><span class="c" data-i="m3.code.c"></span>
+<span class="k">claude</span>                 <span class="c" data-i="m3.code.1"></span>
+<span class="k">claude</span> -p <span class="p">"fix the failing test"</span>   <span class="c" data-i="m3.code.2"></span>
+<span class="k">cat</span> log.txt | <span class="k">claude</span> -p <span class="p">"summarise the errors"</span>  <span class="c" data-i="m3.code.3"></span></pre>
+  <div class="callout"><div class="lbl" data-i="m3.note.l"></div><span data-i="m3.note.b"></span></div>
+  <div class="pager">
+    <button onclick="go(2)"><span class="dir" data-i="nav.back"></span><span data-i="p3.prev"></span></button>
+    <button class="nxt" onclick="go(4)"><span class="dir" data-i="nav.next"></span><span data-i="p3.next"></span></button>
+  </div>
+</section>
+
+<!-- ── 4 · CONNECTORS ── -->
+<section class="module" data-mod="4">
+  <div class="mod-head"><div class="num" data-i="m4.num"></div><h2 data-i="m4.h"></h2></div>
+  <p data-i="m4.p1"></p>
+  <div class="ba">
+    <div class="col before"><div class="h" data-i="m4.ba.bl"></div><div class="b" data-i="m4.ba.bb"></div></div>
+    <div class="col after"><div class="h" data-i="m4.ba.al"></div><div class="b" data-i="m4.ba.ab"></div></div>
+  </div>
+  <p data-i="m4.p2"></p>
+  <pre><span class="c" data-i="m4.code.c"></span>
+<span class="k">claude mcp add</span> postgres <span class="p">-- npx @org/postgres-mcp</span>   <span class="c" data-i="m4.code.1"></span></pre>
+  <div class="callout"><div class="lbl" data-i="m4.note.l"></div><span data-i="m4.note.b"></span></div>
+  <div class="pager">
+    <button onclick="go(3)"><span class="dir" data-i="nav.back"></span><span data-i="p4.prev"></span></button>
+    <button class="nxt" onclick="go(5)"><span class="dir" data-i="nav.next"></span><span data-i="p4.next"></span></button>
+  </div>
+</section>
+
+<!-- ── 5 · LIMITATIONS ── -->
+<section class="module" data-mod="5">
+  <div class="mod-head"><div class="num" data-i="m5.num"></div><h2 data-i="m5.h"></h2></div>
+  <p data-i="m5.p1"></p>
+  <h3 data-i="m5.s1h"></h3>
+  <ul><li data-i="m5.s1.1"></li><li data-i="m5.s1.2"></li><li data-i="m5.s1.3"></li></ul>
+  <h3 data-i="m5.s2h"></h3>
+  <ul><li data-i="m5.s2.1"></li><li data-i="m5.s2.2"></li><li data-i="m5.s2.3"></li></ul>
+  <h3 data-i="m5.s3h"></h3>
+  <ul><li data-i="m5.s3.1"></li><li data-i="m5.s3.2"></li><li data-i="m5.s3.3"></li></ul>
+  <h3 data-i="m5.s4h"></h3>
+  <ul><li data-i="m5.s4.1"></li><li data-i="m5.s4.2"></li><li data-i="m5.s4.3"></li></ul>
+  <div class="callout warn"><div class="lbl" data-i="m5.warn.l"></div><span data-i="m5.warn.b"></span></div>
+  <div class="pager">
+    <button onclick="go(4)"><span class="dir" data-i="nav.back"></span><span data-i="p5.prev"></span></button>
+    <button class="nxt" onclick="go(6)"><span class="dir" data-i="nav.next"></span><span data-i="p5.next"></span></button>
+  </div>
+</section>
+
+<!-- ── 6 · EXAMPLES & USE CASES ── -->
+<section class="module" data-mod="6">
+  <div class="mod-head"><div class="num" data-i="m6.num"></div><h2 data-i="m6.h"></h2></div>
+  <p data-i="m6.p1"></p>
+  <div class="evalbox">
+    <label data-i="m6.pick.h"></label>
+    <div class="qgrid">
+      <div class="qrow" data-s="s1" onclick="pick('s1')"><div class="box"></div><div class="qt"><b data-i="m6.s1"></b></div></div>
+      <div class="qrow" data-s="s2" onclick="pick('s2')"><div class="box"></div><div class="qt"><b data-i="m6.s2"></b></div></div>
+      <div class="qrow" data-s="s3" onclick="pick('s3')"><div class="box"></div><div class="qt"><b data-i="m6.s3"></b></div></div>
+      <div class="qrow" data-s="s4" onclick="pick('s4')"><div class="box"></div><div class="qt"><b data-i="m6.s4"></b></div></div>
+      <div class="qrow" data-s="s5" onclick="pick('s5')"><div class="box"></div><div class="qt"><b data-i="m6.s5"></b></div></div>
+      <div class="qrow" data-s="s6" onclick="pick('s6')"><div class="box"></div><div class="qt"><b data-i="m6.s6"></b></div></div>
+    </div>
+    <p style="font-size:.9rem;opacity:.7;margin:8px 0 0" data-i="m6.hint"></p>
+    <div class="eval-out" id="recOut"></div>
+  </div>
+  <div class="callout"><div class="lbl" data-i="m6.sum.l"></div><strong data-i="m6.sum.b"></strong></div>
+  <div class="pager">
+    <button onclick="go(5)"><span class="dir" data-i="nav.back"></span><span data-i="p6.prev"></span></button>
+    <button class="nxt" disabled>—<span class="dir">→</span></button>
+  </div>
+</section>
+
+</div>
+
+<footer class="site"><span data-i="foot"></span></footer>
+
+<script>
+let lang='en', current=0;
+const I={
+ru:{
+ "brand":"Чат · Cowork · Code",
+ "hero.eyebrow":"Курс · способы работать с Claude",
+ "hero.h1":"Один Claude.<br><em>Три режима, четыре поверхности.</em>",
+ "hero.lede":"Чат, Cowork и Code — это не три приложения, а три вкладки одного. А запускать Claude можно в браузере, в десктоп-приложении, в терминале и без интерфейса вовсе. Разберёмся, что когда выбирать.",
+ "nav.next":"Дальше","nav.back":"Назад",
+
+ "m0.p1":"Claude можно открыть множеством способов, и легко запутаться: где чат, где «агент», зачем терминал, что за коннекторы. На деле тут две независимые оси. Первая — <strong>режим</strong>: как вы взаимодействуете (диалог, задача, код). Вторая — <strong>поверхность</strong>: где именно Claude запущен (браузер, десктоп, терминал, скрипт).",
+ "m0.p2":"Эти оси перпендикулярны. Один и тот же режим живёт на разных поверхностях, а одна поверхность держит несколько режимов. Если держать их в голове раздельно, выбор «чем сейчас пользоваться» становится очевидным.",
+ "m0.idea.l":"Идея курса",
+ "m0.idea.b":"Сначала спросите «<strong>какой режим</strong> мне нужен» (поговорить / отдать задачу / писать код), потом — «<strong>на какой поверхности</strong> его удобнее запустить». Два простых вопроса вместо одной мешанины.",
+ "m0.note.l":"Что показывает скриншот",
+ "m0.note.b":"В десктоп-приложении Claude сверху три вкладки: <strong>Чат</strong> (⌘1), <strong>Cowork</strong> (⌘2) и <strong>Code</strong> (⌘3). Это и есть три режима — переключаются одним нажатием, контекст и проекты общие.",
+ "m0.toc.h":"Что внутри",
+ "m0.toc.1":"<strong>Три режима</strong> — чем Чат, Cowork и Code отличаются по цели и автономности.",
+ "m0.toc.2":"<strong>Cowork вблизи</strong> — режим задач: New task, Scheduled, Live artifacts, Dispatch.",
+ "m0.toc.3":"<strong>Поверхности</strong> — браузер, десктоп, терминал и <code>claude -p</code>: что каждая умеет.",
+ "m0.toc.4":"<strong>Коннекторы</strong> — что такое MCP, готовые коннекторы против своих серверов.",
+ "m0.toc.5":"<strong>Ограничения</strong> — чего нельзя на каждой поверхности и о чём помнить.",
+ "m0.toc.6":"<strong>Примеры</strong> — типичные задачи и подсказчик «что выбрать».",
+ "p0.next":"Три режима",
+
+ "m1.num":"Модуль 1",
+ "m1.h":"Чат, Cowork, Code",
+ "m1.p1":"Три режима отличаются не «умом» модели — он один, — а тем, <strong>сколько работы вы отдаёте за один заход</strong> и насколько Claude действует сам. От «отвечает на реплику» до «берёт задачу и доводит до результата».",
+ "m1.t.c1":"Чат","m1.t.c2":"Cowork","m1.t.c3":"Code",
+ "m1.t.r1":"Зачем","m1.t.r1a":"Думать, писать, разбирать, спрашивать","m1.t.r1b":"Отдать задачу целиком и получить результат","m1.t.r1c":"Строить и менять софт",
+ "m1.t.r2":"Автономность","m1.t.r2a":"Вы ведёте каждый ход","m1.t.r2b":"Агент планирует и работает сам, асинхронно","m1.t.r2c":"Агентный цикл по вашему коду, с вашего одобрения",
+ "m1.t.r3":"Для кого","m1.t.r3a":"Для всех","m1.t.r3b":"Аналитики, менеджеры, не-инженеры","m1.t.r3c":"Разработчики",
+ "m1.t.r4":"Работает с","m1.t.r4a":"Диалог, загрузки, коннекторы","m1.t.r4b":"Файлы, документы, почта, таблицы в ваших приложениях","m1.t.r4c":"Репозиторий, файлы, shell, git",
+ "m1.t.r5":"Переключить","m1.t.r5a":"⌘1","m1.t.r5b":"⌘2","m1.t.r5c":"⌘3",
+ "m1.p2":"Граница не жёсткая: в Чате можно многое, а Code умеет и не про код. Но если задача — «сделай за меня вот это и принеси готовое», вам нужен Cowork или Code, а не диалог.",
+ "m1.tip.l":"Как выбрать за 5 секунд",
+ "m1.tip.b":"Хотите <strong>подумать вместе</strong> — Чат. Хотите <strong>отдать рутину</strong> с файлами и приложениями — Cowork. Лезете <strong>в код</strong> — Code.",
+ "p1.prev":"Введение","p1.next":"Cowork вблизи",
+
+ "m2.num":"Модуль 2",
+ "m2.h":"Cowork вблизи",
+ "m2.p1":"Cowork (⌘2) — режим задач. Вы не ведёте диалог реплика-за-репликой, а ставите цель: Claude планирует шаги, выполняет их сам и приносит результат. Вот из чего он состоит:",
+ "m2.f1t":"New task","m2.f1d":"Поставить задачу словами — агент сам разбивает её на шаги.",
+ "m2.f2t":"Projects","m2.f2d":"Рабочие пространства с памятью и файлами, общие с Чатом.",
+ "m2.f3t":"Scheduled","m2.f3d":"Запускать задачу по расписанию — например, отчёт каждый понедельник.",
+ "m2.f4t":"Live artifacts","m2.f4d":"Документы и дашборды, которые обновляются по мере работы.",
+ "m2.f5t":"Dispatch (Beta)","m2.f5d":"Раздать несколько подзадач параллельно и собрать итог.",
+ "m2.f6t":"Customize","m2.f6d":"Настроить поведение, доступы и подключённые инструменты.",
+ "m2.p2":"Главное отличие от Чата — <strong>асинхронность</strong>. Задачу можно поставить и уйти; Claude работает в фоне, обращается к подключённым приложениям и возвращается с готовым черновиком, а не с очередной репликой.",
+ "m2.ex.l":"Пример",
+ "m2.ex.b":"«Просмотри тред из 30 писем, собери ключевые решения и сделай слайды-обзор» — это ровно Cowork: много файлов и приложений, многошаговая работа, на выходе — артефакт.",
+ "p2.prev":"Три режима","p2.next":"Поверхности",
+
+ "m3.num":"Модуль 3",
+ "m3.h":"Поверхности и их охват",
+ "m3.p1":"Режим — это <em>что</em> вы делаете; поверхность — <em>где</em> Claude запущен. От поверхности зависит доступ к файлам, к инструментам и к автоматизации.",
+ "m3.t.c1":"Браузер","m3.t.c2":"Десктоп","m3.t.c3":"Терминал","m3.t.c4":"claude -p",
+ "m3.t.r1":"Локальные файлы","m3.t.r1a":"Нет (только загрузка)","m3.t.r1b":"Да (через MCP)","m3.t.r1c":"Да, полный доступ","m3.t.r1d":"Да, полный доступ",
+ "m3.t.r2":"Коннекторы / MCP","m3.t.r2a":"Только из каталога","m3.t.r2b":"Каталог + свои MCP","m3.t.r2c":"Свои MCP","m3.t.r2d":"Свои MCP",
+ "m3.t.r3":"Код и shell","m3.t.r3a":"Нет","m3.t.r3b":"Через вкладку Code","m3.t.r3c":"Да","m3.t.r3d":"Да",
+ "m3.t.r4":"Человек в цикле","m3.t.r4a":"Каждый ход","m3.t.r4b":"Одобрение действий","m3.t.r4c":"Одобрение действий","m3.t.r4d":"Нет — всё по скрипту",
+ "m3.t.r5":"Лучше всего для","m3.t.r5a":"Быстро и где угодно","m3.t.r5b":"Локальные файлы + агент","m3.t.r5c":"Код вживую","m3.t.r5d":"Автоматизация, CI",
+ "m3.p2":"Отдельно стоит <code>claude -p</code> — «безголовый» режим Claude Code: один запрос, без интерактива, результат на выход. Это то, что превращает Claude в часть скрипта или пайплайна.",
+ "m3.code.c":"# терминал Claude Code",
+ "m3.code.1":"# интерактивно",
+ "m3.code.2":"# один запрос и выход",
+ "m3.code.3":"# принять данные через pipe",
+ "m3.note.l":"Браузер против десктопа",
+ "m3.note.b":"Главная разница — <strong>доступ к вашей машине</strong>. Браузер изолирован: только то, что вы загрузили. Десктоп умеет читать локальные файлы и подключать свои MCP-серверы (БД, внутренние API).",
+ "p3.prev":"Cowork вблизи","p3.next":"Коннекторы",
+
+ "m4.num":"Модуль 4",
+ "m4.h":"Коннекторы",
+ "m4.p1":"Коннектор — это мостик от Claude к внешнему инструменту или данным, построенный на <strong>MCP</strong> (Model Context Protocol — «USB для ИИ»: один стандарт вместо десятка самописных интеграций). Бывают двух видов.",
+ "m4.ba.bl":"Коннекторы из каталога","m4.ba.bb":"Готовые, проверенные интеграции (Google Drive, Slack, Notion, Stripe…). Включаются в один клик. Работают в браузере, на десктопе и в мобильном. Ничего настраивать не нужно.",
+ "m4.ba.al":"Свои MCP-серверы","m4.ba.ab":"Любой инструмент — своя БД, внутренний API, локальные файлы. Подключаются на десктопе и в Claude Code через конфиг. Полный контроль и одобрение каждой операции, но недоступны в браузере.",
+ "m4.p2":"То есть «коннекторы» — это вычитанное подмножество всего мира MCP. В вебе доступен только каталог; чтобы подключить свой сервер, нужен десктоп или терминал.",
+ "m4.code.c":"# добавить свой MCP-сервер в Claude Code",
+ "m4.code.1":"# теперь Claude видит вашу БД",
+ "m4.note.l":"Где что",
+ "m4.note.b":"Нужен Notion или Drive — каталог в браузере. Нужна <strong>своя</strong> база или внутренний сервис — десктоп или <code>claude mcp add</code> в терминале.",
+ "p4.prev":"Поверхности","p4.next":"Ограничения",
+
+ "m5.num":"Модуль 5",
+ "m5.h":"Ограничения",
+ "m5.p1":"У каждой поверхности своя цена за удобство. Главное — понимать, чего на ней <strong>нельзя</strong>, чтобы не ждать невозможного.",
+ "m5.s1h":"Браузер",
+ "m5.s1.1":"Нет доступа к файловой системе — только загрузка файлов, с лимитами по размеру и числу.",
+ "m5.s1.2":"Нельзя подключить свой MCP-сервер и нельзя выполнять код или shell.",
+ "m5.s1.3":"Лимиты на сообщения и на размер контекста; объёмные задачи упираются в потолок.",
+ "m5.s2h":"Десктоп",
+ "m5.s2.1":"Доступ к локальным файлам — через разрешения; каждое действие агента требует одобрения.",
+ "m5.s2.2":"Часть возможностей (Code, Cowork) завязана на платный план.",
+ "m5.s2.3":"Внешние интеграции работают только при сети — офлайн доступно не всё.",
+ "m5.s3h":"Терминал (Claude Code)",
+ "m5.s3.1":"Нужен платный план и настроенное рабочее окружение.",
+ "m5.s3.2":"Выполняет команды на вашей машине — для чужого/непроверенного кода используйте песочницу.",
+ "m5.s3.3":"Мощность требует внимательности: легко дать агенту больше прав, чем нужно.",
+ "m5.s4h":"Headless (claude -p)",
+ "m5.s4.1":"Нет интерактивного одобрения — действия идут без вашего «да» на каждый шаг.",
+ "m5.s4.2":"Ошибка в скрипте масштабируется: что запущено в цикле, выполнится во всех итерациях.",
+ "m5.s4.3":"Для CI и фоновых задач изолируйте окружение и доступ к секретам.",
+ "m5.warn.l":"Осторожно с автоматизацией",
+ "m5.warn.b":"Флаги вроде <code>--dangerously-skip-permissions</code> снимают подтверждения ради автоматизации. Удобно в изолированном CI — опасно на машине с доступом к продакшену и секретам.",
+ "p5.prev":"Коннекторы","p5.next":"Примеры",
+
+ "m6.num":"Модуль 6",
+ "m6.h":"Примеры и сценарии",
+ "m6.p1":"Соберём всё вместе. Выберите, что вы хотите сделать, — и увидите, какой режим и поверхность подходят.",
+ "m6.pick.h":"Что вы хотите сделать?",
+ "m6.s1":"Накидать письмо или обсудить идею",
+ "m6.s2":"Из 30 писем собрать слайды-обзор",
+ "m6.s3":"Починить баг или добавить фичу в репозиторий",
+ "m6.s4":"Автоматически чинить каждый PR",
+ "m6.s5":"По ходу разговора достать документ из Google Drive",
+ "m6.s6":"Каждую неделю готовить отчёт сам по себе",
+ "m6.hint":"↑ Нажмите на сценарий, чтобы увидеть рекомендацию.",
+ "rec.s1":"<strong>Чат</strong> · браузер или десктоп. Диалог, где вы ведёте каждый ход — самый быстрый путь подумать вслух. Коннекторы не нужны.",
+ "rec.s2":"<strong>Cowork</strong> · десктоп. Многошаговая работа с файлами и почтой, на выходе — артефакт. Поставьте задачу через New task и заберите слайды.",
+ "rec.s3":"<strong>Code</strong> · терминал. Агент читает репозиторий, правит файлы, гоняет тесты и готовит коммит — с вашего одобрения.",
+ "rec.s4":"<strong>Code · claude -p</strong> · headless в CI. Один запрос без интерактива внутри GitHub Actions — без человека в цикле.",
+ "rec.s5":"<strong>Чат</strong> + коннектор из каталога. Подключите Google Drive в один клик и просите документы прямо в диалоге.",
+ "rec.s6":"<strong>Cowork · Scheduled</strong> (или <code>claude -p</code> по cron). Повторяющаяся задача по расписанию — поставьте один раз и получайте отчёт сами собой.",
+ "m6.sum.l":"Суть",
+ "m6.sum.b":"Сначала режим (поговорить / отдать задачу / код), потом поверхность (где удобнее запустить). Два вопроса — и выбор очевиден.",
+ "p6.prev":"Ограничения",
+
+ "foot":"Чат · Cowork · Code — способы работать с Claude"
+},
+en:{
+ "brand":"Chat · Cowork · Code",
+ "hero.eyebrow":"Course · ways to use Claude",
+ "hero.h1":"One Claude.<br><em>Three modes, four surfaces.</em>",
+ "hero.lede":"Chat, Cowork and Code aren't three apps — they're three tabs of one. And you can run Claude in a browser, in the desktop app, in the terminal, or with no interface at all. Let's sort out what to reach for when.",
+ "nav.next":"Next","nav.back":"Back",
+
+ "m0.p1":"There are many ways to open Claude, and it's easy to get tangled: where's chat, where's the \"agent\", why a terminal, what are connectors. Really there are two independent axes. The first is the <strong>mode</strong>: how you interact (a conversation, a task, code). The second is the <strong>surface</strong>: where Claude actually runs (browser, desktop, terminal, a script).",
+ "m0.p2":"The two axes are perpendicular. The same mode lives on different surfaces, and one surface can hold several modes. Keep them separate in your head and \"what should I use right now\" becomes obvious.",
+ "m0.idea.l":"The idea of this course",
+ "m0.idea.b":"First ask \"<strong>which mode</strong> do I need\" (talk / hand off a task / write code), then \"<strong>which surface</strong> is easiest to run it on\". Two simple questions instead of one blur.",
+ "m0.note.l":"What the screenshot shows",
+ "m0.note.b":"In the Claude desktop app there are three tabs up top: <strong>Chat</strong> (⌘1), <strong>Cowork</strong> (⌘2) and <strong>Code</strong> (⌘3). Those are the three modes — one keystroke apart, sharing context and projects.",
+ "m0.toc.h":"What's inside",
+ "m0.toc.1":"<strong>Three modes</strong> — how Chat, Cowork and Code differ in purpose and autonomy.",
+ "m0.toc.2":"<strong>Cowork up close</strong> — the task mode: New task, Scheduled, Live artifacts, Dispatch.",
+ "m0.toc.3":"<strong>Surfaces</strong> — browser, desktop, terminal and <code>claude -p</code>: what each can do.",
+ "m0.toc.4":"<strong>Connectors</strong> — what MCP is, ready-made connectors vs. your own servers.",
+ "m0.toc.5":"<strong>Limitations</strong> — what you can't do on each surface, and what to watch for.",
+ "m0.toc.6":"<strong>Examples</strong> — common tasks and a \"what should I pick\" helper.",
+ "p0.next":"Three modes",
+
+ "m1.num":"Module 1",
+ "m1.h":"Chat, Cowork, Code",
+ "m1.p1":"The three modes differ not in how \"smart\" the model is — it's the same model — but in <strong>how much work you hand off in one go</strong> and how much Claude acts on its own. From \"answers a line\" to \"takes a task and finishes it\".",
+ "m1.t.c1":"Chat","m1.t.c2":"Cowork","m1.t.c3":"Code",
+ "m1.t.r1":"Purpose","m1.t.r1a":"Think, write, analyse, ask","m1.t.r1b":"Hand off a whole task, get a deliverable","m1.t.r1c":"Build and change software",
+ "m1.t.r2":"Autonomy","m1.t.r2a":"You drive every turn","m1.t.r2b":"Agent plans and runs on its own, async","m1.t.r2c":"Agentic loop over your code, with your approval",
+ "m1.t.r3":"Who it's for","m1.t.r3a":"Everyone","m1.t.r3b":"Analysts, managers, non-engineers","m1.t.r3c":"Developers",
+ "m1.t.r4":"Works on","m1.t.r4a":"The conversation, uploads, connectors","m1.t.r4b":"Files, docs, email, sheets across your apps","m1.t.r4c":"Your repo, files, shell, git",
+ "m1.t.r5":"Switch with","m1.t.r5a":"⌘1","m1.t.r5b":"⌘2","m1.t.r5c":"⌘3",
+ "m1.p2":"The line isn't rigid: Chat can do a lot, and Code isn't only about code. But when the task is \"do this for me and bring back the finished thing\", you want Cowork or Code — not a back-and-forth.",
+ "m1.tip.l":"How to choose in 5 seconds",
+ "m1.tip.b":"Want to <strong>think together</strong> — Chat. Want to <strong>hand off chores</strong> across files and apps — Cowork. Going <strong>into the code</strong> — Code.",
+ "p1.prev":"Intro","p1.next":"Cowork up close",
+
+ "m2.num":"Module 2",
+ "m2.h":"Cowork up close",
+ "m2.p1":"Cowork (⌘2) is the task mode. Instead of a line-by-line conversation you set a goal: Claude plans the steps, runs them itself and brings back a result. Here's what it's made of:",
+ "m2.f1t":"New task","m2.f1d":"State a task in words — the agent breaks it into steps itself.",
+ "m2.f2t":"Projects","m2.f2d":"Workspaces with memory and files, shared with Chat.",
+ "m2.f3t":"Scheduled","m2.f3d":"Run a task on a schedule — say, a report every Monday.",
+ "m2.f4t":"Live artifacts","m2.f4d":"Documents and dashboards that update as the work proceeds.",
+ "m2.f5t":"Dispatch (Beta)","m2.f5d":"Fan out several sub-tasks in parallel and gather the result.",
+ "m2.f6t":"Customize","m2.f6d":"Tune behaviour, access, and which tools are connected.",
+ "m2.p2":"The key difference from Chat is that it's <strong>asynchronous</strong>. You can set a task and walk away; Claude works in the background, reaches into connected apps, and comes back with a finished draft rather than another reply.",
+ "m2.ex.l":"Example",
+ "m2.ex.b":"\"Read this 30-email thread, pull out the key decisions, and make overview slides\" — that's Cowork exactly: many files and apps, multi-step work, an artifact at the end.",
+ "p2.prev":"Three modes","p2.next":"Surfaces",
+
+ "m3.num":"Module 3",
+ "m3.h":"Surfaces and their scope",
+ "m3.p1":"The mode is <em>what</em> you do; the surface is <em>where</em> Claude runs. The surface decides access to files, to tools, and to automation.",
+ "m3.t.c1":"Browser","m3.t.c2":"Desktop","m3.t.c3":"Terminal","m3.t.c4":"claude -p",
+ "m3.t.r1":"Local files","m3.t.r1a":"No (uploads only)","m3.t.r1b":"Yes (via MCP)","m3.t.r1c":"Yes, full access","m3.t.r1d":"Yes, full access",
+ "m3.t.r2":"Connectors / MCP","m3.t.r2a":"Directory only","m3.t.r2b":"Directory + custom MCP","m3.t.r2c":"Custom MCP","m3.t.r2d":"Custom MCP",
+ "m3.t.r3":"Code & shell","m3.t.r3a":"No","m3.t.r3b":"Via the Code tab","m3.t.r3c":"Yes","m3.t.r3d":"Yes",
+ "m3.t.r4":"Human in the loop","m3.t.r4a":"Every turn","m3.t.r4b":"Approve actions","m3.t.r4c":"Approve actions","m3.t.r4d":"None — scripted",
+ "m3.t.r5":"Best for","m3.t.r5a":"Quick, anywhere","m3.t.r5b":"Local files + agent","m3.t.r5c":"Coding live","m3.t.r5d":"Automation, CI",
+ "m3.p2":"<code>claude -p</code> stands apart — the \"headless\" mode of Claude Code: one prompt, no interaction, result to stdout. It's what turns Claude into part of a script or pipeline.",
+ "m3.code.c":"# the Claude Code terminal",
+ "m3.code.1":"# interactive",
+ "m3.code.2":"# one prompt, then exit",
+ "m3.code.3":"# take input via a pipe",
+ "m3.note.l":"Browser vs. desktop",
+ "m3.note.b":"The main difference is <strong>access to your machine</strong>. The browser is sandboxed: only what you upload. The desktop can read local files and connect your own MCP servers (databases, internal APIs).",
+ "p3.prev":"Cowork up close","p3.next":"Connectors",
+
+ "m4.num":"Module 4",
+ "m4.h":"Connectors",
+ "m4.p1":"A connector is a bridge from Claude to an external tool or data source, built on <strong>MCP</strong> (Model Context Protocol — \"USB for AI\": one standard instead of a dozen bespoke integrations). They come in two kinds.",
+ "m4.ba.bl":"Directory connectors","m4.ba.bb":"Ready-made, vetted integrations (Google Drive, Slack, Notion, Stripe…). Turned on in one click. Work in the browser, on desktop and mobile. Nothing to configure.",
+ "m4.ba.al":"Your own MCP servers","m4.ba.ab":"Any tool — your database, an internal API, local files. Connected on desktop and in Claude Code via config. Full control and approval of every operation, but not available in the browser.",
+ "m4.p2":"So \"connectors\" are a vetted subset of the wider MCP world. In the web only the directory is available; to plug in your own server you need the desktop or the terminal.",
+ "m4.code.c":"# add your own MCP server to Claude Code",
+ "m4.code.1":"# now Claude can see your database",
+ "m4.note.l":"Which is where",
+ "m4.note.b":"Need Notion or Drive — the directory, in the browser. Need <strong>your own</strong> database or internal service — desktop, or <code>claude mcp add</code> in the terminal.",
+ "p4.prev":"Surfaces","p4.next":"Limitations",
+
+ "m5.num":"Module 5",
+ "m5.h":"Limitations",
+ "m5.p1":"Every surface has a price for its convenience. The thing to know is what you <strong>can't</strong> do on it, so you don't wait for the impossible.",
+ "m5.s1h":"Browser",
+ "m5.s1.1":"No filesystem access — uploads only, with limits on size and count.",
+ "m5.s1.2":"You can't connect your own MCP server, and can't run code or shell.",
+ "m5.s1.3":"Message and context-size limits; big jobs hit a ceiling.",
+ "m5.s2h":"Desktop",
+ "m5.s2.1":"Local-file access is permission-gated; every agent action needs approval.",
+ "m5.s2.2":"Some capabilities (Code, Cowork) are tied to a paid plan.",
+ "m5.s2.3":"External integrations need a network — not everything works offline.",
+ "m5.s3h":"Terminal (Claude Code)",
+ "m5.s3.1":"Requires a paid plan and a set-up working environment.",
+ "m5.s3.2":"It runs commands on your machine — sandbox it for untrusted code.",
+ "m5.s3.3":"Power needs care: it's easy to grant the agent more than it needs.",
+ "m5.s4h":"Headless (claude -p)",
+ "m5.s4.1":"No interactive approval — actions run without a \"yes\" at each step.",
+ "m5.s4.2":"A scripting mistake scales: whatever runs in a loop runs on every iteration.",
+ "m5.s4.3":"For CI and background jobs, isolate the environment and access to secrets.",
+ "m5.warn.l":"Careful with automation",
+ "m5.warn.b":"Flags like <code>--dangerously-skip-permissions</code> drop confirmations for the sake of automation. Handy in an isolated CI — dangerous on a machine with access to production and secrets.",
+ "p5.prev":"Connectors","p5.next":"Examples",
+
+ "m6.num":"Module 6",
+ "m6.h":"Examples & use cases",
+ "m6.p1":"Let's put it together. Pick what you're trying to do and see which mode and surface fit.",
+ "m6.pick.h":"What are you trying to do?",
+ "m6.s1":"Draft an email or kick an idea around",
+ "m6.s2":"Turn a 30-email thread into overview slides",
+ "m6.s3":"Fix a bug or add a feature in my repo",
+ "m6.s4":"Auto-fix every pull request",
+ "m6.s5":"Pull a doc from Google Drive mid-conversation",
+ "m6.s6":"Produce a weekly report on its own",
+ "m6.hint":"↑ Click a scenario to see the recommendation.",
+ "rec.s1":"<strong>Chat</strong> · browser or desktop. A conversation where you drive every turn — the fastest way to think out loud. No connectors needed.",
+ "rec.s2":"<strong>Cowork</strong> · desktop. Multi-step work across files and email, ending in an artifact. Set it via New task and collect the slides.",
+ "rec.s3":"<strong>Code</strong> · terminal. The agent reads the repo, edits files, runs tests and prepares a commit — with your approval.",
+ "rec.s4":"<strong>Code · claude -p</strong> · headless in CI. One non-interactive prompt inside GitHub Actions — no human in the loop.",
+ "rec.s5":"<strong>Chat</strong> + a directory connector. Turn on Google Drive in one click and ask for documents right in the conversation.",
+ "rec.s6":"<strong>Cowork · Scheduled</strong> (or <code>claude -p</code> on cron). A recurring task on a schedule — set it once and the report arrives on its own.",
+ "m6.sum.l":"The gist",
+ "m6.sum.b":"Mode first (talk / hand off a task / code), surface second (where it's easiest to run). Two questions, and the choice is obvious.",
+ "p6.prev":"Limitations",
+
+ "foot":"Chat · Cowork · Code — ways to use Claude"
+}
+};
+
+function setLang(l){
+  lang=l;
+  document.documentElement.lang=l;
+  document.getElementById('lang-ru').classList.toggle('active',l==='ru');
+  document.getElementById('lang-en').classList.toggle('active',l==='en');
+  const d=I[l];
+  document.querySelectorAll('[data-i]').forEach(el=>{const k=el.getAttribute('data-i');if(d[k]!==undefined)el.innerHTML=d[k];});
+  buildNav();
+}
+const navTitles={
+ ru:['Введение','1 · Режимы','2 · Cowork','3 · Поверхности','4 · Коннекторы','5 · Ограничения','6 · Примеры'],
+ en:['Intro','1 · Modes','2 · Cowork','3 · Surfaces','4 · Connectors','5 · Limits','6 · Examples']
+};
+function buildNav(){
+  const nav=document.getElementById('modnav');nav.innerHTML='';
+  navTitles[lang].forEach((t,i)=>{
+    const b=document.createElement('button');b.textContent=t;b.onclick=()=>go(i);
+    if(i===current)b.classList.add('active');nav.appendChild(b);
+  });
+}
+function go(i){
+  current=i;
+  document.querySelectorAll('.module').forEach(m=>m.classList.toggle('active',+m.dataset.mod===i));
+  document.querySelectorAll('#modnav button').forEach((b,bi)=>b.classList.toggle('active',bi===i));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function pick(k){
+  document.querySelectorAll('.qrow[data-s]').forEach(el=>el.classList.toggle('on',el.dataset.s===k));
+  const out=document.getElementById('recOut');
+  out.className='eval-out show';
+  out.innerHTML=`<div class="eval-card">${I[lang]['rec.'+k]}</div>`;
+}
+setLang('en');
+</script>
+</body>
+</html>
