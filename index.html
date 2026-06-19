@@ -38,7 +38,8 @@ header.top{position:sticky;top:0;z-index:50;background:rgba(244,237,225,.92);bac
 .hero .lede{font-size:1.3rem;max-width:46ch;color:#4a3d30}
 
 .pyramid{display:flex;flex-direction:column-reverse;align-items:center;gap:4px;margin:46px auto 0;max-width:720px}
-.pyramid .lv{width:100%;padding:15px 22px;text-align:center;border-radius:7px;color:var(--paper)}
+.pyramid .lv{width:100%;padding:15px 22px;text-align:center;border-radius:7px;color:var(--paper);display:block;text-decoration:none;cursor:pointer;transition:transform .15s ease,filter .15s ease,box-shadow .15s ease}
+.pyramid .lv:hover{filter:brightness(1.09);transform:translateY(-2px);box-shadow:0 6px 18px var(--shadow)}
 .pyramid .lv:nth-child(1){background:#b4421f}
 .pyramid .lv:nth-child(2){width:84%;background:#b06228}
 .pyramid .lv:nth-child(3){width:67%;background:#6f7039}
@@ -93,10 +94,10 @@ footer.foot p{font-family:'Spline Sans Mono',monospace;font-size:.74rem;opacity:
     <h1 data-i="hero.h1"></h1>
     <p class="lede" data-i="hero.lede"></p>
     <div class="pyramid">
-      <div class="lv"><div class="t" data-i="lv1"></div><div class="sub" data-i="lv1.r"></div></div>
-      <div class="lv"><div class="t" data-i="lv2"></div><div class="sub" data-i="lv2.r"></div></div>
-      <div class="lv"><div class="t" data-i="lv3"></div><div class="sub" data-i="lv3.r"></div></div>
-      <div class="lv"><div class="t" data-i="lv4"></div><div class="sub" data-i="lv4.r"></div></div>
+      <a class="lv" href="chat-cowork-code.html"><div class="t" data-i="lv1"></div><div class="sub" data-i="lv1.r"></div></a>
+      <a class="lv" href="chat-cowork-code.html"><div class="t" data-i="lv2"></div><div class="sub" data-i="lv2.r"></div></a>
+      <a class="lv" href="claude-code-context.html"><div class="t" data-i="lv3"></div><div class="sub" data-i="lv3.r"></div></a>
+      <a class="lv" href="auto-mode.html"><div class="t" data-i="lv4"></div><div class="sub" data-i="lv4.r"></div></a>
     </div>
   </section>
 
