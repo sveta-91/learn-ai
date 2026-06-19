@@ -49,8 +49,9 @@ header.top{position:sticky;top:0;z-index:50;background:rgba(244,237,225,.92);bac
 
 .courses{padding:18px 0 90px;display:flex;flex-direction:column;gap:22px}
 .section-lbl{font-family:'Spline Sans Mono',monospace;font-size:.74rem;text-transform:uppercase;letter-spacing:.16em;color:var(--rust);margin:28px 0 4px}
-.card{display:block;text-decoration:none;color:inherit;background:var(--paper-2);border:1px solid var(--line);border-radius:14px;padding:30px 32px;position:relative;transition:transform .2s,box-shadow .2s,border-color .2s}
+.card{display:block;text-decoration:none;color:inherit;background:var(--paper-2);border:1px solid var(--line);border-radius:14px;padding:30px 32px;position:relative;scroll-margin-top:84px;transition:transform .2s,box-shadow .2s,border-color .2s}
 .card:hover{transform:translateY(-3px);box-shadow:0 14px 34px var(--shadow);border-color:var(--rust)}
+.card:target{border-color:var(--rust);box-shadow:0 0 0 2px var(--rust),0 14px 34px var(--shadow)}
 .card .meta-row{display:flex;align-items:center;gap:14px;margin-bottom:14px}
 .card .cnum{font-family:'Spline Sans Mono',monospace;font-size:.78rem;letter-spacing:.12em;color:var(--rust);text-transform:uppercase}
 .card .badge{font-family:'Spline Sans Mono',monospace;font-size:.66rem;letter-spacing:.06em;background:var(--ink);color:var(--paper);padding:3px 9px;border-radius:5px}
@@ -94,10 +95,10 @@ footer.foot p{font-family:'Spline Sans Mono',monospace;font-size:.74rem;opacity:
     <h1 data-i="hero.h1"></h1>
     <p class="lede" data-i="hero.lede"></p>
     <div class="pyramid">
-      <a class="lv" href="chat-cowork-code.html"><div class="t" data-i="lv1"></div><div class="sub" data-i="lv1.r"></div></a>
-      <a class="lv" href="chat-cowork-code.html"><div class="t" data-i="lv2"></div><div class="sub" data-i="lv2.r"></div></a>
-      <a class="lv" href="claude-code-context.html"><div class="t" data-i="lv3"></div><div class="sub" data-i="lv3.r"></div></a>
-      <a class="lv" href="auto-mode.html"><div class="t" data-i="lv4"></div><div class="sub" data-i="lv4.r"></div></a>
+      <a class="lv" href="#c1"><div class="t" data-i="lv1"></div><div class="sub" data-i="lv1.r"></div></a>
+      <a class="lv" href="#c1"><div class="t" data-i="lv2"></div><div class="sub" data-i="lv2.r"></div></a>
+      <a class="lv" href="#c2"><div class="t" data-i="lv3"></div><div class="sub" data-i="lv3.r"></div></a>
+      <a class="lv" href="#c3"><div class="t" data-i="lv4"></div><div class="sub" data-i="lv4.r"></div></a>
     </div>
   </section>
 
@@ -105,7 +106,7 @@ footer.foot p{font-family:'Spline Sans Mono',monospace;font-size:.74rem;opacity:
 
   <section class="courses">
 
-    <a class="card" href="chat-cowork-code.html">
+    <a class="card" id="c1" href="chat-cowork-code.html">
       <div class="meta-row">
         <span class="cnum" data-i="c1.num"></span>
         <span class="badge" data-i="c1.badge"></span>
@@ -115,7 +116,7 @@ footer.foot p{font-family:'Spline Sans Mono',monospace;font-size:.74rem;opacity:
       <span class="go"><span data-i="c1.cta"></span><span class="arrow">→</span></span>
     </a>
 
-    <a class="card" href="claude-code-context.html">
+    <a class="card" id="c2" href="claude-code-context.html">
       <div class="meta-row">
         <span class="cnum" data-i="c2.num"></span>
         <span class="badge" data-i="c2.badge"></span>
@@ -125,7 +126,7 @@ footer.foot p{font-family:'Spline Sans Mono',monospace;font-size:.74rem;opacity:
       <span class="go"><span data-i="c2.cta"></span><span class="arrow">→</span></span>
     </a>
 
-    <a class="card" href="auto-mode.html">
+    <a class="card" id="c3" href="auto-mode.html">
       <div class="meta-row">
         <span class="cnum" data-i="c3.num"></span>
         <span class="badge" data-i="c3.badge"></span>
