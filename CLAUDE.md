@@ -9,10 +9,10 @@ A set of standalone, single-file HTML "learning decks" that teach how to work wi
 Current files:
 - `index.html` — course chooser / landing page. The GitHub Pages root; links out to the three decks in order. Same design system and i18n pattern as the decks but no module navigation (it's a single static page).
 - `chat-cowork-code.html` — "Chat · Cowork · Code" (Course 01, the foundational overview): the three Claude modes (Chat/Cowork/Code) × the four surfaces (browser/desktop/terminal/`claude -p`), connectors/MCP, limitations, examples. 7 modules (0–6). Includes an interactive "what should I pick" helper (`pick()`).
-- `claude-code-context.html` — "Project Context in Claude Code" (Course 02). CLAUDE.md, @-imports, rules/, settings, agents, skills, MCP. 9 modules (0–8).
-- `auto-mode.html` — "Level 3 → 4 · Autonomous automation with Claude" (Course 03). (Was previously `index.html` before the chooser took that name.)
+- `claude-code-context.html` — "Project and its Context" (Course 02). CLAUDE.md, @-imports, rules/, settings, agents, skills, MCP. 9 modules (0–8).
+- `auto-mode.html` — "Agent vs Project" (Course 03). (Was previously `index.html` before the chooser took that name.)
 - `CNAME` — the GitHub Pages custom domain (`wanna-know-ai.com`).
-- `scripts/` — maintainer tooling, not served by the site: `validate-i18n.py` (deck sanity check) and `cf-analytics.py` (pull visitor stats).
+- `scripts/` — maintainer tooling, not served by the site: `validate-i18n.py` (deck sanity check), `cf-analytics.py` (pull visitor stats), and `rename-course.py` (rename a course across chooser + nav + title + brand, bilingually).
 
 There is no package manager, bundler, test runner, or lint config. To preview, open the file directly in a browser or serve the directory statically (e.g. `python3 -m http.server`).
 
