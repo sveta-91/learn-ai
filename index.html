@@ -37,19 +37,14 @@ header.top{position:sticky;top:0;z-index:50;background:rgba(244,237,225,.92);bac
 .hero h1 em{font-style:italic;color:var(--rust)}
 .hero .lede{font-size:1.3rem;max-width:46ch;color:#4a3d30}
 
-.pyramid{display:flex;flex-direction:column-reverse;align-items:center;gap:7px;margin:46px auto 0;max-width:720px}
-.pyramid .lv{width:100%;padding:14px 22px;text-align:center;position:relative;border:1px solid var(--line);border-radius:10px;background:var(--paper-2)}
-.pyramid .lv:nth-child(2){width:84%}
-.pyramid .lv:nth-child(3){width:67%}
-.pyramid .lv:nth-child(4){width:52%}
-.pyramid .lv .n{font-family:'Spline Sans Mono',monospace;font-size:.68rem;opacity:.5}
-.pyramid .lv .kick{font-family:'Spline Sans Mono',monospace;font-size:.58rem;letter-spacing:.09em;text-transform:uppercase;opacity:.85;margin-top:3px}
-.pyramid .lv .t{font-family:'Fraunces',serif;font-weight:600;font-size:.98rem;margin-top:4px}
-.pyramid .lv .sub{font-family:'Newsreader',serif;font-style:italic;font-size:.8rem;line-height:1.32;margin-top:6px;opacity:.62;text-wrap:balance}
-.pyramid .lv.you{background:var(--moss);color:var(--paper);border-color:transparent}
-.pyramid .lv.goal{background:var(--rust);color:var(--paper);border-color:transparent}
-.pyramid .lv.you .n,.pyramid .lv.goal .n{opacity:.8}
-.pyramid .lv.you .sub,.pyramid .lv.goal .sub{opacity:.92}
+.pyramid{display:flex;flex-direction:column-reverse;align-items:center;gap:4px;margin:46px auto 0;max-width:720px}
+.pyramid .lv{width:100%;padding:15px 22px;text-align:center;border-radius:7px;color:var(--paper)}
+.pyramid .lv:nth-child(1){background:#b4421f}
+.pyramid .lv:nth-child(2){width:84%;background:#b06228}
+.pyramid .lv:nth-child(3){width:67%;background:#6f7039}
+.pyramid .lv:nth-child(4){width:52%;background:#4a5d3a}
+.pyramid .lv .t{font-family:'Fraunces',serif;font-weight:600;font-size:.98rem}
+.pyramid .lv .sub{font-family:'Newsreader',serif;font-style:italic;font-size:.8rem;line-height:1.32;margin-top:5px;opacity:.88;text-wrap:balance}
 
 .courses{padding:18px 0 90px;display:flex;flex-direction:column;gap:22px}
 .section-lbl{font-family:'Spline Sans Mono',monospace;font-size:.74rem;text-transform:uppercase;letter-spacing:.16em;color:var(--rust);margin:28px 0 4px}
@@ -98,10 +93,10 @@ footer.foot p{font-family:'Spline Sans Mono',monospace;font-size:.74rem;opacity:
     <h1 data-i="hero.h1"></h1>
     <p class="lede" data-i="hero.lede"></p>
     <div class="pyramid">
-      <div class="lv"><div class="n">01</div><div class="t" data-i="lv1"></div><div class="sub" data-i="lv1.r"></div></div>
-      <div class="lv"><div class="n">02</div><div class="t" data-i="lv2"></div><div class="sub" data-i="lv2.r"></div></div>
-      <div class="lv you"><div class="n">03</div><div class="kick" data-i="lv.you"></div><div class="t" data-i="lv3"></div><div class="sub" data-i="lv3.r"></div></div>
-      <div class="lv goal"><div class="n">04</div><div class="kick" data-i="lv.goal"></div><div class="t" data-i="lv4"></div><div class="sub" data-i="lv4.r"></div></div>
+      <div class="lv"><div class="t" data-i="lv1"></div><div class="sub" data-i="lv1.r"></div></div>
+      <div class="lv"><div class="t" data-i="lv2"></div><div class="sub" data-i="lv2.r"></div></div>
+      <div class="lv"><div class="t" data-i="lv3"></div><div class="sub" data-i="lv3.r"></div></div>
+      <div class="lv"><div class="t" data-i="lv4"></div><div class="sub" data-i="lv4.r"></div></div>
     </div>
   </section>
 
@@ -155,7 +150,7 @@ ru:{
  "hero.eyebrow":"Учебная программа · Claude Code",
  "hero.h1":"Научиться <em>работать с Claude</em>,<br>а не просто им пользоваться.",
  "hero.lede":"Три коротких курса о том, как пройти путь от первого диалога с ассистентом до репозитория, который сам несёт свой контекст, и процессов, отданных агенту. Выберите, с чего начать.",
- "lv1":"Чат","lv2":"+ Коннекторы","lv3":"Проекты + контекст","lv4":"Авто-режим","lv.you":"вы здесь","lv.goal":"цель",
+ "lv1":"Чат","lv2":"+ Коннекторы","lv3":"Проекты + контекст","lv4":"Авто-режим",
  "lv1.r":"«это умеют все»","lv2.r":"«пустить его в мою почту?..»","lv3.r":"«да, надо разобраться»","lv4.r":"«хочу своего агента — а зачем?»",
  "sec.lbl":"Курсы · в порядке прохождения",
  "c1.num":"Курс 01","c1.badge":"Обзор · 7 модулей",
@@ -177,7 +172,7 @@ en:{
  "hero.eyebrow":"Learning track · Claude Code",
  "hero.h1":"Learn to <em>work with Claude</em>,<br>not just use it.",
  "hero.lede":"Three short courses on the path from your first chat with an assistant to a repo that carries its own context and processes you hand to an agent. Pick where to start.",
- "lv1":"Chat","lv2":"+ Connectors","lv3":"Projects + context","lv4":"Auto mode","lv.you":"you are here","lv.goal":"goal",
+ "lv1":"Chat","lv2":"+ Connectors","lv3":"Projects + context","lv4":"Auto mode",
  "lv1.r":"“everyone’s done this”","lv2.r":"“let it read my email…?”","lv3.r":"“ok — worth figuring out”","lv4.r":"“I want my own agent — but for what?”",
  "sec.lbl":"Courses · in order",
  "c1.num":"Course 01","c1.badge":"Overview · 7 modules",
