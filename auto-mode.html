@@ -39,16 +39,6 @@
         .hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(2.6rem,7vw,4.4rem);line-height:.98;letter-spacing:-.025em;margin-bottom:24px}
         .hero h1 em{font-style:italic;color:var(--rust)}
         .hero .lede{font-size:1.3rem;max-width:42ch;color:#4a3d30}
-        .levels-strip{display:flex;gap:0;margin-top:46px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--paper-2)}
-        .levels-strip .lv{flex:1;padding:18px 14px;text-align:center;border-right:1px solid var(--line);position:relative}
-        .levels-strip .lv:last-child{border-right:none}
-        .levels-strip .lv .n{font-family:'Spline Sans Mono',monospace;font-size:.7rem;opacity:.5}
-        .levels-strip .lv .t{font-family:'Fraunces',serif;font-weight:600;font-size:.95rem;margin-top:4px}
-        .levels-strip .lv.you{background:var(--moss);color:var(--paper)}
-        .levels-strip .lv.you .n{opacity:.8}
-        .levels-strip .lv.goal{background:var(--rust);color:var(--paper)}
-        .levels-strip .lv.goal .n{opacity:.85}
-        .levels-strip .lv .tag{position:absolute;top:-1px;left:50%;transform:translate(-50%,-100%);font-family:'Spline Sans Mono',monospace;font-size:.58rem;background:var(--ink);color:var(--paper);padding:2px 7px;border-radius:4px;white-space:nowrap}
         .module{display:none;padding:40px 0 80px;animation:fade .4s ease}
         .module.active{display:block}
         @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -145,8 +135,6 @@
             nav.modnav{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;gap:6px;padding-bottom:2px;scrollbar-width:thin}
             nav.modnav button{flex:0 0 auto;white-space:nowrap}
             .langtog{align-self:flex-end}
-            .levels-strip{flex-wrap:wrap}
-            .levels-strip .lv{min-width:33%;border-bottom:1px solid var(--line)}
             .loop .arrow{transform:rotate(90deg)}
         }
     a.brand{text-decoration:none;color:var(--ink)}
@@ -186,12 +174,6 @@ a.brand:hover .home{opacity:1}
             <div class="eyebrow" data-i="hero.eyebrow"></div>
             <h1 data-i="hero.h1"></h1>
             <p class="lede" data-i="hero.lede"></p>
-            <div class="levels-strip">
-                <div class="lv"><div class="n">01</div><div class="t" data-i="lv1"></div></div>
-                <div class="lv"><div class="n">02</div><div class="t" data-i="lv2"></div></div>
-                <div class="lv you"><div class="tag" data-i="lv.you"></div><div class="n">03</div><div class="t" data-i="lv3"></div></div>
-                <div class="lv goal"><div class="tag" data-i="lv.goal"></div><div class="n">04</div><div class="t" data-i="lv4"></div></div>
-            </div>
         </div>
         <p data-i="m0.p1"></p>
         <p data-i="m0.p2"></p>
@@ -404,7 +386,6 @@ claude <span class="k">--print</span> <span class="k">--permission-mode</span> a
             "hero.eyebrow":"Курс · ваш первый агент",
             "hero.h1":"Перестать <em>вести диалог</em>.<br>Начать <em>ставить цель</em>.",
             "hero.lede":"Шаги к вашему первому настоящему агенту — и принцип, по которому почти любой повторяющийся процесс можно отдать агенту.",
-            "lv1":"Чат","lv2":"+ Коннекторы","lv3":"Проекты + контекст","lv4":"Ваш агент","lv.you":"вы здесь","lv.goal":"цель",
             "m0.p1":"Вы уже пользовались Claude как ассистентом: спрашиваете, читаете ответ, спрашиваете снова — <strong>ведёте каждый шаг</strong>. Агент — следующий шаг: вы даёте ему цель, и он сам работает над её достижением.",
             "m0.p2":"Этот курс — про то, как собрать первого. Ваша роль меняется: вместо того чтобы на каждом шаге нажимать «дальше», вы <strong>формулируете цель и проверяете результат</strong>, а между этими точками агент работает сам.",
             "m0.idea.l":"Главная идея курса","m0.idea.b":"Этот курс не про вашу сегодняшнюю работу. Он про <strong>навык распознавать и собирать автономные процессы</strong> — любые. QA, отчётность, мониторинг, рутина с документами. Принцип один.",
@@ -548,7 +529,6 @@ claude <span class="k">--print</span> <span class="k">--permission-mode</span> a
             "hero.eyebrow":"Course · your first agent",
             "hero.h1":"Stop <em>running the conversation</em>.<br>Start <em>setting the goal</em>.",
             "hero.lede":"Steps to your first real agent, and the principle that lets you hand almost any repeating process to an agent.",
-            "lv1":"Chat","lv2":"+ Connectors","lv3":"Projects + context","lv4":"Your agent","lv.you":"you are here","lv.goal":"goal",
             "m0.p1":"You've used Claude as an assistant: you ask, it answers, you ask again — you <strong>drive every step</strong>. An agent is the next move: you hand it a goal and it works toward that goal on its own.",
             "m0.p2":"This course is about building your first one. Your job shifts from clicking «next» at every step to <strong>stating the goal and checking the result</strong> — and in between, the agent works on its own.",
             "m0.idea.l":"The core idea","m0.idea.b":"This course isn't about your current job. It's about <strong>the skill of spotting and assembling autonomous processes</strong> — any of them. QA, reporting, monitoring, document routine. The principle is one.",

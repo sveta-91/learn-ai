@@ -37,16 +37,19 @@ header.top{position:sticky;top:0;z-index:50;background:rgba(244,237,225,.92);bac
 .hero h1 em{font-style:italic;color:var(--rust)}
 .hero .lede{font-size:1.3rem;max-width:46ch;color:#4a3d30}
 
-.levels-strip{display:flex;gap:0;margin-top:46px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--paper-2)}
-.levels-strip .lv{flex:1;padding:18px 14px;text-align:center;border-right:1px solid var(--line);position:relative}
-.levels-strip .lv:last-child{border-right:none}
-.levels-strip .lv .n{font-family:'Spline Sans Mono',monospace;font-size:.7rem;opacity:.5}
-.levels-strip .lv .t{font-family:'Fraunces',serif;font-weight:600;font-size:.95rem;margin-top:4px}
-.levels-strip .lv.you{background:var(--moss);color:var(--paper)}
-.levels-strip .lv.you .n{opacity:.8}
-.levels-strip .lv.goal{background:var(--rust);color:var(--paper)}
-.levels-strip .lv.goal .n{opacity:.85}
-.levels-strip .lv .tag{position:absolute;top:-1px;left:50%;transform:translate(-50%,-100%);font-family:'Spline Sans Mono',monospace;font-size:.58rem;background:var(--ink);color:var(--paper);padding:2px 7px;border-radius:4px;white-space:nowrap}
+.pyramid{display:flex;flex-direction:column-reverse;align-items:center;gap:7px;margin:46px auto 0;max-width:720px}
+.pyramid .lv{width:100%;padding:14px 22px;text-align:center;position:relative;border:1px solid var(--line);border-radius:10px;background:var(--paper-2)}
+.pyramid .lv:nth-child(2){width:84%}
+.pyramid .lv:nth-child(3){width:67%}
+.pyramid .lv:nth-child(4){width:52%}
+.pyramid .lv .n{font-family:'Spline Sans Mono',monospace;font-size:.68rem;opacity:.5}
+.pyramid .lv .kick{font-family:'Spline Sans Mono',monospace;font-size:.58rem;letter-spacing:.09em;text-transform:uppercase;opacity:.85;margin-top:3px}
+.pyramid .lv .t{font-family:'Fraunces',serif;font-weight:600;font-size:.98rem;margin-top:4px}
+.pyramid .lv .sub{font-family:'Newsreader',serif;font-style:italic;font-size:.8rem;line-height:1.32;margin-top:6px;opacity:.62;text-wrap:balance}
+.pyramid .lv.you{background:var(--moss);color:var(--paper);border-color:transparent}
+.pyramid .lv.goal{background:var(--rust);color:var(--paper);border-color:transparent}
+.pyramid .lv.you .n,.pyramid .lv.goal .n{opacity:.8}
+.pyramid .lv.you .sub,.pyramid .lv.goal .sub{opacity:.92}
 
 .courses{padding:18px 0 90px;display:flex;flex-direction:column;gap:22px}
 .section-lbl{font-family:'Spline Sans Mono',monospace;font-size:.74rem;text-transform:uppercase;letter-spacing:.16em;color:var(--rust);margin:28px 0 4px}
@@ -65,9 +68,12 @@ header.top{position:sticky;top:0;z-index:50;background:rgba(244,237,225,.92);bac
 footer.foot{border-top:1px solid var(--line);padding:30px 0 60px}
 footer.foot p{font-family:'Spline Sans Mono',monospace;font-size:.74rem;opacity:.55;text-align:center}
 
+@media(max-width:560px){
+  .pyramid .lv:nth-child(2){width:92%}
+  .pyramid .lv:nth-child(3){width:84%}
+  .pyramid .lv:nth-child(4){width:76%}
+}
 @media(max-width:640px){
-  .levels-strip{flex-wrap:wrap}
-  .levels-strip .lv{min-width:33%;border-bottom:1px solid var(--line)}
   .hero{padding:54px 0 30px}
   .card{padding:24px 22px}
 }
@@ -91,11 +97,11 @@ footer.foot p{font-family:'Spline Sans Mono',monospace;font-size:.74rem;opacity:
     <div class="eyebrow" data-i="hero.eyebrow"></div>
     <h1 data-i="hero.h1"></h1>
     <p class="lede" data-i="hero.lede"></p>
-    <div class="levels-strip">
-      <div class="lv"><div class="n">01</div><div class="t" data-i="lv1"></div></div>
-      <div class="lv"><div class="n">02</div><div class="t" data-i="lv2"></div></div>
-      <div class="lv you"><div class="tag" data-i="lv.you"></div><div class="n">03</div><div class="t" data-i="lv3"></div></div>
-      <div class="lv goal"><div class="tag" data-i="lv.goal"></div><div class="n">04</div><div class="t" data-i="lv4"></div></div>
+    <div class="pyramid">
+      <div class="lv"><div class="n">01</div><div class="t" data-i="lv1"></div><div class="sub" data-i="lv1.r"></div></div>
+      <div class="lv"><div class="n">02</div><div class="t" data-i="lv2"></div><div class="sub" data-i="lv2.r"></div></div>
+      <div class="lv you"><div class="n">03</div><div class="kick" data-i="lv.you"></div><div class="t" data-i="lv3"></div><div class="sub" data-i="lv3.r"></div></div>
+      <div class="lv goal"><div class="n">04</div><div class="kick" data-i="lv.goal"></div><div class="t" data-i="lv4"></div><div class="sub" data-i="lv4.r"></div></div>
     </div>
   </section>
 
@@ -150,6 +156,7 @@ ru:{
  "hero.h1":"Научиться <em>работать с Claude</em>,<br>а не просто им пользоваться.",
  "hero.lede":"Три коротких курса о том, как пройти путь от первого диалога с ассистентом до репозитория, который сам несёт свой контекст, и процессов, отданных агенту. Выберите, с чего начать.",
  "lv1":"Чат","lv2":"+ Коннекторы","lv3":"Проекты + контекст","lv4":"Авто-режим","lv.you":"вы здесь","lv.goal":"цель",
+ "lv1.r":"«это умеют все»","lv2.r":"«пустить его в мою почту?..»","lv3.r":"«да, надо разобраться»","lv4.r":"«хочу своего агента — а зачем?»",
  "sec.lbl":"Курсы · в порядке прохождения",
  "c1.num":"Курс 01","c1.badge":"Обзор · 7 модулей",
  "c1.h":"Чат · Cowork · Code",
@@ -171,6 +178,7 @@ en:{
  "hero.h1":"Learn to <em>work with Claude</em>,<br>not just use it.",
  "hero.lede":"Three short courses on the path from your first chat with an assistant to a repo that carries its own context and processes you hand to an agent. Pick where to start.",
  "lv1":"Chat","lv2":"+ Connectors","lv3":"Projects + context","lv4":"Auto mode","lv.you":"you are here","lv.goal":"goal",
+ "lv1.r":"“everyone’s done this”","lv2.r":"“let it read my email…?”","lv3.r":"“ok — worth figuring out”","lv4.r":"“I want my own agent — but for what?”",
  "sec.lbl":"Courses · in order",
  "c1.num":"Course 01","c1.badge":"Overview · 7 modules",
  "c1.h":"Chat · Cowork · Code",
