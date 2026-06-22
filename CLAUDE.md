@@ -46,6 +46,7 @@ Each deck links to its neighbours so the three read as a sequence (order = the c
 - Edits are content-only inside existing single-file decks; there is nothing to compile or test beyond opening the page and checking both EN and RU render and every module navigates.
 - **Validate before committing:** `python3 scripts/validate-i18n.py` checks RU/EN key balance, that every `data-i` resolves, and that each `<script>` passes `node --check`. (Keys used only from JS — quiz/eval widgets, the `rec.s*` recommendations — show as "info", not errors.)
 - When embedding images, inline them as base64 data URIs to keep each deck a self-contained single file (no external asset files).
+- **Favicon:** every page's `<head>` carries the same inlined `<link rel="icon" type="image/png" href="data:image/png;base64,…">` (a 64px PNG of the Claude spark cradled in cupped hands), placed right after the viewport meta — one per file, keep it identical across all pages.
 
 ## Deployment & ops
 
